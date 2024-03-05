@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+  <style>
+    #searchForm .modal-dialog {
+        max-width: 800px; /* Adjust the width as needed */
+        width: 100%;
+        margin: 1.75rem auto;
+    }
+  </style>
+
+    <div class="pagetitle">
+      <h1>Barangay Clearance</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Barangay Clearance</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="row">
+
+        <div class="row justify-content-center">
+
+          <div class="card">
+            <div class="card-body">
+            </br>
+              <!-- Vertical Form -->
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="col-6">
+                  <p>
+                    Resident:
+                    <input type="text" id="resident" value="{{ name }}" class="form-control" placeholder="Enter Resident Name" disabled>
+                    <input type="text" value="{{ form.resident.value }}" name="resident" id="id_resident" class="form-control" placeholder="id" style="display: none;">
+                    <button type="button" class="btn btn-info rounded-pill view-details-btn" data-toggle="modal" data-target="#searchForm">Choose Resident</button>
+                    <!-- style="display: none; -->
+                  </p>
+                  <p>{{ form.purpose.label_tag }} {{ form.purpose }}</p>
+                  <p>{{ form.or_no.label_tag }} {{ form.or_no }}</p>
+                  <p>{{ form.or_amount.label_tag }} {{ form.or_amount }}</p>
+                  <p>{{ form.or_date.label_tag }} {{ form.or_date }}</p>
+                  <p>{{ form.ctc.label_tag }} {{ form.ctc }}</p>
+                  <p>{{ form.ctc_amount.label_tag }} {{ form.ctc_amount }}</p>
+                  <p>{{ form.ctc_date.label_tag }} {{ form.ctc_date }}</p>
+                </div>               
+                
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+              </form><!-- Vertical Form -->
+
+            </div>
+          </div>  
+        </div>
+      </div>
+    </section> 
+
+    <!-- Popup Form -->
+    <div class="modal fade" id="searchForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="popupFormLabel">SEARCH RESIDENT</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="input-group mb-3">
+                <input type="text" id="lname" name="lastname" class="form-control" placeholder="Search Last Name">
+                <input type="text" id="fname" name="firstname" class="form-control" placeholder="Search First Name">
+                <input type="text" id="mname" name="middlename" class="form-control" placeholder="Search Middle Name">
+                <button id="searchButton" type="button" class="btn btn-info rounded-pill filter-btn">Search</button>
+              </div>
+          </div>
+          <div id="search-results"></div>
+            <table id="residents-table" class="table">
+              <!-- Second Table -->
+              <thead>
+                <tr>
+                  <th>Resident Name</th>
+                  <th>Address</th>
+                  <th>Action</th>
+                  <!-- <th>Action</th> -->
+                </tr>
+              </thead>
+              <tbody id="residents-body">
+    
+              </tbody>
+            </table>
+            <!-- Include your pagination HTML structure here -->
+            <div class="pagination">
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/bootstrap/js/bootystrap.js' %}"></script>            
+    
+    <script>
+      $(document).ready(function() {
+        // Get the elements by their IDs
+        var componentsNav = document.getElementById('forms-nav');
+        var residentListItem = document.getElementById('BrgyClearance');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+
+        $(".pagination").on("click", "a", function(event) {
+          event.preventDefault();
+
+          var pageUrl = $(this).attr("href");
+
+          // Perform an AJAX request to fetch the new page
+          $.ajax({
+              url: pageUrl,
+              method: "GET",
+              dataType: 'json',
+              success: function(data) {
+                // console.log('Pagination Success. Received data:', data);
+                  updateResidentsTable(data);
+              },
+              error: function(xhr, status, error) {
+                  console.error("Error:", error);
+                  console.log("XHR:", xhr);
+                  console.log("Status:", status);
+              }
+          });
+        });
+
+        function updateResidentsTable(data) {
+          // Update the table body with the generated HTML
+          $("#residents-body").empty();
+          var html = "";
+          for (var i = 0; i < data.residents.length; i++) {
+            var fullName = data.residents[i].l_name + ", " + data.residents[i].f_name + " " + data.residents[i].m_name;
+            var houseInfo = data.residents[i].house_no__house_no + " " + data.residents[i].house_no__address + ", " + data.residents[i].house_no__purok__purok_name;
+            var is_respondent = data.residents[i].is_respondent
+            html += '<tr>' +
+              '<td>' + fullName + '</td>' +
+              '<td>' + houseInfo + '</td>' +
+              '<td><button type="button" data-dismiss="modal" class="btn btn-primary choose-resident-btn" data-is_respondent="' + data.residents[i].is_respondent + '" data-resident-id="' + data.residents[i].pk + '" data-resident="' + fullName + '">Choose</button></td>' +
+              '</tr>';
+          }
+          $("#residents-body").append(html);
+
+          // Update pagination links
+          var paginationHtml = '<span class="step-links">';
+          if (data.has_previous) {
+            var previouspage = data.current_page - 1
+            paginationHtml += '<a href="/SearchResident/?page=' + 1 + '">first</a> ';
+            paginationHtml += '<a href="/SearchResident/?page=' + previouspage + '">previous</a> ';
+          }
+          paginationHtml += 'Page ' + data.current_page + ' of ' + data.num_pages;
+          var nextpage = data.current_page + 1
+          if (data.has_next) {
+            paginationHtml += ' <a href="/SearchResident/?page=' + nextpage + '">next</a>';
+            paginationHtml += ' <a href="/SearchResident/?page=' + data.num_pages + '">last</a>';
+          }
+          paginationHtml += '</span>';
+
+          $(".pagination").html(paginationHtml);
+
+        }
+
+        // Add an event listener to the search button
+        $("#searchButton").click(function() {
+          // Retrieve the values from the input fields
+          var lastName = $("#lname").val();
+          var firstName = $("#fname").val();
+          var middleName = $("#mname").val();
+
+          // Perform an AJAX request to fetch the search results
+          $.ajax({
+            url: "/SearchResident/",
+            method: "GET",
+            data: { lastname: lastName, firstname: firstName, middlename: middleName },
+            success: function(data) {
+              console.log("Success. Received data:", data);
+              // Check if residents property exists
+              if (data.residents !== undefined) {
+                  // Update the table body and pagination links
+                  updateResidentsTable(data);
+              } else {
+                  console.error("Error: Data is missing residents property.");
+              }
+            },
+            error: function(error) {
+              console.error("Error:", error);
+            }
+          });
+        });
+        // Add an event listener to the "Choose" button
+        $(document).on("click", ".choose-resident-btn", function () {
+          var resident = $(this).data("resident");
+          var residentId = $(this).data("resident-id");
+          var respondent = $(this).data("is_respondent");
+          // Set the value of the "resident" input field
+          // $("#resident").val(resident);
+          // $("#id_resident").val(residentId);
+
+          // $("#searchForm").modal("hide");
+          if (respondent === true) {
+              // Resident is a respondent, show message box
+              alert(resident + " has a blotter record!");
+          } else {
+              // Resident is not a respondent, proceed with setting values and hiding the modal
+              $("#resident").val(resident);
+              $("#id_resident").val(residentId);
+              $("#searchForm").modal("hide");
+          }
+        });
+      });
+    </script>  
+{% endblock %}

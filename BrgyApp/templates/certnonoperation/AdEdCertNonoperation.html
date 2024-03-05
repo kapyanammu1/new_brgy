@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+    <div class="pagetitle">
+      <h1>Certificate of Non Operation of Business</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Certificate of Non Operation of Business</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="row">
+
+        <div class="row justify-content-center">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Certificate of Non Operation of Business</h5>
+
+              <!-- Vertical Form -->
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="col-6">
+                  {{ form.as_p }}   
+                </div>               
+                
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                  <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+              </form><!-- Vertical Form -->
+
+            </div>
+          </div>  
+        </div>
+      </div>
+    </section>  
+    <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+    <script>
+      $(document).ready(function() {
+        // Get the elements by their IDs
+        var componentsNav = document.getElementById('forms-nav');
+        var residentListItem = document.getElementById('NonOperation');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+      });
+    </script> 
+{% endblock %}

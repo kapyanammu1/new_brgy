@@ -1,0 +1,550 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+   
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+          <div class="row">
+
+            <!-- Resident -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card customers-card">
+
+                <div class="card-body">
+                  <h5 class="card-title">Barangay Population</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <a href="{% url 'ResidentList' %}"><i class="bi bi-people"></i></a>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{resident_count}}</h6>
+                      <span class="text-success small pt-1 fw-bold"></span> <span class="text-muted small pt-2 ps-1">Resident Count</span>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Sales Card -->
+
+            <!-- Revenue Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card revenue-card">
+
+                <div class="card-body">
+                  <h5 class="card-title">Household</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <a href="{% url 'HouseholdList' %}"><i class="bi bi-house-fill"></i></a>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{household}}</h6>
+                      <span class="text-success small pt-1 fw-bold"></span> <span class="text-muted small pt-2 ps-1">Household Count</span>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Revenue Card -->
+
+            <!-- Customers Card -->
+            <div class="col-xxl-4 col-xl-12">
+              <div class="card info-card sales-card">
+                <div class="card-body">
+                  <h5 class="card-title">Business</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <a href="{% url 'BusinessList' %}"><i class="bi bi-cart"></i></a>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{business_active_count}} <span class="text-danger small pt-1 fw-bold">Active</span></h6>
+                      <span class="text-danger small pt-1 fw-bold">{{business_inactive_count}}</span> <span class="text-muted small pt-2 ps-1">Inactive</span>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div><!-- End Customers Card -->
+
+            <!-- Clearance and Certificate Chart -->
+            <div class="col-12">
+              <div class="card">
+
+                <!-- <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" onclick="TodayClick(event)">Today</a></li>
+                    <li><a class="dropdown-item" onclick="ThisMonthClick(event)">This Month</a></li>
+                    <li><a class="dropdown-item" onclick="ThisYearClick(event)">This Year</a></li>
+                  </ul>
+                </div> -->
+
+                <div class="card-body">
+                  <h5 class="card-title">Clearances and Certificate Revenue Report<span>| <label id="leybel"></label></span></h5>
+
+                  <!-- Line Chart -->
+                  <div id="reportsChart"></div>
+                  {% load custom_filters %}
+                  <script>
+
+                    var reportsChart;
+                    function loadreportsChart(seriesValues1, seriesValues2, seriesValues3, seriesValues4, seriesValues5, seriesValues6, seriesValues8, categoriesValues1) {
+                     var chartOptions = {
+                        series: [{
+                          name: 'Brgy Clearance/Certificate Revenue',
+                          data: seriesValues1
+                        },
+                        {
+                          name: 'Business Clearance/Certificate Revenue',
+                          data: seriesValues2
+                        },
+                        {
+                          name: 'Certificate of Residency Revenue',
+                          data: seriesValues3
+                        },
+                        {
+                          name: 'Certificate of Indigency Revenue',
+                          data: seriesValues4
+                        },
+                        {
+                          name: 'Certificate of Solo Parent Revenue',
+                          data: seriesValues5
+                        },
+                        {
+                          name: 'Certificate of Good Moral',
+                          data: seriesValues6
+                        },
+                        {
+                          name: 'Certificate of Death Person Claim',
+                          data: seriesValues8
+                        }],
+                        chart: {
+                          height: 350,
+                          type: 'area',
+                          toolbar: {
+                            show: false
+                          },
+                        },
+                        markers: {
+                          size: 4
+                        },
+                        plotOptions: {
+                          bar: {
+                            horizontal: false,
+                            dataLabels: {
+                              position: "top"
+                            }
+                          },
+                          colors: ['#FDD835', '#FF5722']  // Add color codes for each series
+                        },
+                        fill: {
+                          type: "gradient",
+                          gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.3,
+                            opacityTo: 0.4,
+                            stops: [0, 90, 100]
+                          }
+                        },
+                        dataLabels: {
+                          enabled: false
+                        },
+                        stroke: {
+                          curve: 'smooth',
+                          width: 2
+                        },
+                        xaxis: {
+                          categories: categoriesValues1
+                        },
+                        yaxis: {
+                          title: {
+                            text: 'Total Amount'
+                          }
+                        },
+                        fill: {
+                          opacity: 1
+                        }
+                      };  
+                      
+                      reportsChart = new ApexCharts(document.getElementById("reportsChart"), chartOptions);
+                      reportsChart.render();                   
+                    }
+                    function updateChart(categoriesValues) {
+                      // reportsChart.updateSeries([{
+                      //   name: 'Revenue',
+                      //   data: seriesValues
+                      // }]);
+
+                      reportsChart.updateOptions({
+                        xaxis: {
+                          categories: categoriesValues
+                        }
+                      });                      
+                    }
+                    
+                    document.addEventListener("DOMContentLoaded", () => {
+                      document.getElementById('leybel').innerText =  '{{ thisYear }}';
+                      
+                      seriesValues1 = [
+                          {% for value in series1 %}
+                              {{ value }},
+                          {% endfor %}
+                      ];
+                      seriesValues2 = [
+                        {% for value in series2 %}
+                            {{ value }},
+                        {% endfor %}
+                      ];
+                      seriesValues3 = [
+                        {% for value in series3 %}
+                            {{ value }},
+                        {% endfor %}
+                      ];
+                      seriesValues4 = [
+                          {% for value in series4 %}
+                              {{ value }},
+                          {% endfor %}
+                      ];
+                      seriesValues5 = [
+                        {% for value in series5 %}
+                            {{ value }},
+                        {% endfor %}
+                      ];
+                      seriesValues6 = [
+                        {% for value in series6 %}
+                            {{ value }},
+                        {% endfor %}
+                      ];
+                      // seriesValues7 = [
+                      //   #{% for value in series7 %}
+                      //       #{{ value }},
+                      //   #{% endfor %}
+                      // ];
+                      seriesValues8 = [
+                        {% for value in series8 %}
+                            {{ value }},
+                        {% endfor %}
+                      ];
+                      categoriesValues1 = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                      ];                     
+                      loadreportsChart(seriesValues1, seriesValues2, seriesValues3, seriesValues4, seriesValues5, seriesValues6, seriesValues8, categoriesValues1);
+                      updateChart(categoriesValues1);
+                    });
+                  </script>                  
+                  
+                  <!-- End Line Chart -->
+
+                </div>
+
+              </div>
+            </div><!-- End Reports -->
+
+            <!-- Blotter -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="card-body">
+                  <h5 class="card-title">Pending Blotter Reports<span></span></h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">Case No.</th>
+                        <th scope="col">Complainant/s</th>
+                        <th scope="col">Respondent/s</th>
+                        <th scope="col">Case</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="SalesList">
+                      {% for item in blotter %}
+                      <tr>     
+                        <td>{{item.case_no}}</td>                 
+                        <td>{{item.complainants}}</td>
+                        <td>{{item.respondents}}</td>
+                        <td>{{item.case}}</td>
+                        <td>{{item.date_created}}</td>
+                        <td>{{item.status}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales -->
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+          <div class="card">
+            <div class="card-body pb-0">
+              <h5 class="card-title">Resident per Purok/Zone</h5>
+
+              <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  echarts.init(document.querySelector("#trafficChart")).setOption({
+                    tooltip: {
+                      trigger: 'item'
+                    },
+                    legend: {
+                      top: '5%',
+                      left: 'center'
+                    },
+                    series: [{
+                      name: 'Access From',
+                      type: 'pie',
+                      radius: ['40%', '70%'],
+                      avoidLabelOverlap: false,
+                      label: {
+                        show: false,
+                        position: 'center'
+                      },
+                      emphasis: {
+                        label: {
+                          show: true,
+                          fontSize: '18',
+                          fontWeight: 'bold'
+                        }
+                      },
+                      labelLine: {
+                        show: false
+                      },
+                      data: [
+                        {% for item in resident_graph_data %}
+                            {
+                                value: {{ item.total_count }},
+                                name: '{{ item.house_no__purok__purok_name }}'
+                            },
+                        {% endfor %}
+                      ]
+                    }]
+                  });
+                });
+              </script>
+
+            </div>
+          </div><!-- End Website Traffic -->
+
+           <!-- Total Clearances and Certificates -->
+            <div class="card recent-sales overflow-auto">
+
+              <!-- <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                  </li>
+
+                  <li><a class="dropdown-item" onclick="TodayClick(event)">Today</a></li>
+                  <li><a class="dropdown-item" onclick="MonthClick(event)">This Month</a></li>
+                  <li><a class="dropdown-item" onclick="YearClick(event)">This Year</a></li>
+                </ul>
+              </div> -->
+
+              <div class="card-body pb-0">
+                <h5 class="card-title">Total Clearances and Certificates</h5>
+
+                <table class="table table-borderless">
+                  <thead>
+                    <tr>
+                      <th scope="col">Clearance/Certificate</th>
+                      <th scope="col">Total Count</th>
+                      <th scope="col">Total revenue</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tbody_clearance">
+                    <tr>                      
+                      <td>Barangay Clearance/Certificate</td>
+                      <td>{{total_count_BrgyclearCert}}</td>
+                      <td>{{total_BrgyclearCert}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Business Clearance/Certificate</td>
+                      <td>{{total_count_BusclearCert}}</td>
+                      <td>{{total_BusclearCert}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Residency</td>
+                      <td>{{residency_total.total_count}}</td>
+                      <td>{{residency_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Indigency</td>
+                      <td>{{indigency_total.total_count}}</td>
+                      <td>{{indigency_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Solo Parent</td>
+                      <td>{{soloparent_total.total_count}}</td>
+                      <td>{{soloparent_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Good Moral</td>
+                      <td>{{goodmoral_total.total_count}}</td>
+                      <td>{{goodmoral_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Death Person Claim</td>
+                      <td>{{deathCert_total.total_count}}</td>
+                      <td>{{deathCert_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of First Time Job Seekers</td>
+                      <td>{{jobseekers_total.total_count}}</td>
+                      <td>None</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <script>
+              function sendValue() {
+                  var elementValue = document.getElementById('leybel1').innerText;
+                  fetch(`/index/?element_value=${elementValue}`)
+                      .then(response => response.json())
+                      .then(data => {
+                          // Handle the response data if needed
+                      })
+                      .catch(error => {
+                          console.error('Error:', error);
+                      });
+              }
+
+              function TodayClick(event) {
+                document.getElementById('leybel1').innerText = 'Today';
+                table_body = document.getElementById('tbody_clearance');
+                table_body.innerHTML = `
+                    <tr>                      
+                      <td>Barangay Clearance</td>
+                      <td>{{brgyClearance_total.total_count}}</td>
+                      <td>{{brgyClearance_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Business Clearance</td>
+                      <td>{{businessClearance_total.total_count}}</td>
+                      <td>{{businessClearance_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Residency</td>
+                      <td>{{residency_total.total_count}}</td>
+                      <td>{{residency_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Indigency</td>
+                      <td>{{indigency_total.total_count}}</td>
+                      <td>{{indigency_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Solo Parent</td>
+                      <td>{{soloparent_total.total_count}}</td>
+                      <td>{{soloparent_total.total_amount}}</td>
+                    </tr>
+                    <tr>                      
+                      <td>Certificate of Good Moral</td>
+                      <td>{{goodmoral_total.total_count}}</td>
+                      <td>{{goodmoral_total.total_amount}}</td>
+                    </tr>
+                    `;
+              }
+            </script>
+          <!-- Budget Report -->
+          <!--<div class="card">
+
+             <div class="card-body pb-0">
+              <h5 class="card-title">Budget Report <span>| This Month</span></h5>
+
+              <div id="budgetChart" style="min-height: 400px;" class="echart"></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  var budgetChart = echarts.init(document.querySelector("#budgetChart")).setOption({
+                    legend: {
+                      data: ['Allocated Budget', 'Actual Spending']
+                    },
+                    radar: {
+                      // shape: 'circle',
+                      indicator: [{
+                          name: 'Sales',
+                          max: 6500
+                        },
+                        {
+                          name: 'Administration',
+                          max: 16000
+                        },
+                        {
+                          name: 'Information Technology',
+                          max: 30000
+                        },
+                        {
+                          name: 'Customer Support',
+                          max: 38000
+                        },
+                        {
+                          name: 'Development',
+                          max: 52000
+                        },
+                        {
+                          name: 'Marketing',
+                          max: 25000
+                        }
+                      ]
+                    },
+                    series: [{
+                      name: 'Budget vs spending',
+                      type: 'radar',
+                      data: [{
+                          value: [4200, 3000, 20000, 35000, 50000, 18000],
+                          name: 'Allocated Budget'
+                        },
+                        {
+                          value: [5000, 14000, 28000, 26000, 42000, 21000],
+                          name: 'Actual Spending'
+                        }
+                      ]
+                    }]
+                  });
+                });
+              </script>
+
+            </div>
+          </div>End Budget Report -->
+
+          <!-- Website Traffic -->
+          
+        </div>
+    </section>
+
+{% endblock %}
+
+  

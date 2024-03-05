@@ -1,0 +1,30 @@
+Watching for file changes with StatReloader
+Performing system checks...
+
+System check identified no issues (0 silenced).
+January 13, 2024 - 21:57:56
+Django version 4.2.3, using settings 'BrgySystem.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+[13/Jan/2024 21:58:00] "GET / HTTP/1.1" 200 36437
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/bootstrap-icons/bootstrap-icons.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/simple-datatables/style.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/bootstrap/css/bootstrap.min.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/quill/quill.snow.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/quill/quill.bubble.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/boxicons/css/boxicons.min.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/remixicon/remixicon.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/css/style.css HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/img/logo.png HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/apexcharts/apexcharts.min.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/quill/quill.min.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/chart.js/chart.umd.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/echarts/echarts.min.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/simple-datatables/simple-datatables.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/vendor/tinymce/tinymce.min.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:00] "GET /static/assets/js/main.js HTTP/1.1" 304 0
+[13/Jan/2024 21:58:02] "GET /static/assets/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?24e3eb84d0bcaf83d77f904c78ac1f47 HTTP/1.1" 304 0
+[13/Jan/2024 21:58:02] "GET /static/assets/vendor/remixicon/remixicon.woff2?t=1590207869815 HTTP/1.1" 304 0
+[13/Jan/2024 21:58:03] "GET /static/assets/img/favicon.png HTTP/1.1" 304 0

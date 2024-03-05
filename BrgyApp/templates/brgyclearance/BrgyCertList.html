@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+  <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootystrap.js' %}"></script>
+    <div class="pagetitle">
+      <h1>Barangay Certificate with Purok</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Barangay Certificate with Purok</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+            </br>
+              <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'AdEdBrgyCertificate' 0 %}">Add New Barangay Certificate with Purok</a></button>
+              <button type="button" class="btn btn-info rounded-pill view-details-btn" data-toggle="modal" data-target="#popupForm">Print List</button>
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Resident Name</th>
+                    <th scope="col">Purpose</th>
+                    <th scope="col">OR Number</th>
+                    <th scope="col">OR Amount</th>
+                    <th scope="col">OR Date</th>
+                    <th scope="col">CTC Number</th>
+                    <th scope="col">CTC Amount</th>
+                    <th scope="col">CTC Date</th>
+                    <th scope="col">Date Created</th>
+                    <th scope="col">Action</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for a in brgycertificate %}
+                  <tr id="{{ a.pk }}">                   
+                    <td>{{ a.resident }}</td>
+                    <td>{{ a.purpose }}</td>
+                    <td>{{ a.or_no }}</td>
+                    <td>{{ a.or_amount }}</td>
+                    <td>{{ a.or_date }}</td>
+                    <td>{{ a.ctc }}</td>
+                    <td>{{ a.ctc_amount }}</td>
+                    <td>{{ a.ctc_date }}</td>
+                    <td>{{ a.date_created }}</td>
+                    <td scope="col">
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'AdEdBrgyCertificate' a.pk %}">Edit</a></button>
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'pdf_brgyCertificate' a.pk %}"  target="_blank">Print</a></button>                      
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+            <!-- Popup Form -->
+  <div class="modal fade" id="popupForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="popupFormLabel">Report Filter</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="GET" id="filter-form">
+            <div class="row align-items-center">
+              <div class="col-lg-5">
+                  <label for="id_fromDate">From</label>
+                  <p><input type="date" class="form-control" name="fromDate" id="id_fromDate"></p>
+              </div>
+              <div class="col-lg-5">
+                <label for="id_toDate">To</label>
+                <p><input type="date" class="form-control" name="toDate" id="id_toDate"></p>
+              </div>
+              <div class="col-lg-2">
+                <button type="button" class="btn btn-light rounded-pill filter-btn" data-toggle="modal" onclick="printSelectedPurok()">Print</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+      const currentDate = new Date().toISOString().split('T')[0];
+
+      // Set the default value of the input field to the current date
+      document.getElementById('id_fromDate').value = currentDate;
+      document.getElementById('id_toDate').value = currentDate;
+
+      $(document).ready(function() {
+        // Get the elements by their IDs
+        var componentsNav = document.getElementById('forms-nav');
+        var residentListItem = document.getElementById('BrgyCertificate');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+
+          $('.filter-btn').click(function() {      
+            var fromDate = document.getElementById('id_fromDate').value; // Use jQuery to get the value
+            var toDate = document.getElementById('id_toDate').value;
+            
+            $.ajax({
+              url: '/pdf_brgyCertificate_list/', 
+              method: 'GET',
+              data: { fromDate: fromDate, toDate: toDate },
+
+              error: function() {
+                alert('Error occurred!');
+              }
+            });
+          });
+        });
+
+        function printSelectedPurok() {
+            // Get the selected value from the dropdown
+            var fromDate = document.getElementById('id_fromDate').value;
+            var toDate = document.getElementById('id_toDate').value;
+            
+            // Pass the selectedPurok to the openPrintPage function
+            openPrintPage(fromDate, toDate);
+        }
+
+        function openPrintPage(fromDate, toDate) {
+            // Replace 'url_to_print' with the actual URL you want to print
+            var urlToPrint = '/pdf_brgyCertificate_list/?fromDate=' + fromDate + '&toDate=' + toDate;
+
+            // Open the URL in a new tab or window
+            window.open(urlToPrint, '_blank');
+        }
+
+
+      function deleteBrgy(pk) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                type: "POST",
+                url: "/Delete_brgycertificate/" + pk + "/",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function() {
+                    // Reload the content after successful deletion
+                    location.reload();
+                },
+                error: function() {
+                    alert("Error deleting the item.");
+                }
+            });
+        }
+      } 
+      
+     
+    </script>
+{% endblock %}

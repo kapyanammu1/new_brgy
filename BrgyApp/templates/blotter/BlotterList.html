@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+  <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootystrap.js' %}"></script>
+    <div class="pagetitle">
+      <h1>Blotters</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Blotter</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+            </br>
+              <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'AdEdBlotter' 0 %}">Add New Blotter</a></button>
+              {% if has_admin_permission %}
+                <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'export_blotter_to_excel' %}">Export to excel</a></button>
+              {% endif %}
+              <button type="button" class="btn btn-info rounded-pill view-details-btn" data-toggle="modal" data-target="#popupForm">Print</button>
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Case No</th>
+                    <th scope="col">Complainant's Name</th>
+                    <th scope="col">Respondent's Name</th>
+                    <th scope="col">Statement</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Input Date</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for blotters in blotter %}
+                  <tr id="{{ d.pk }}">           
+                    <td>{{ blotters.case_no }}</td>        
+                    <td>
+                      {% for complainant in blotters.complainants.all %}
+                          {{ complainant }}{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% for respondent in blotters.respondents.all %}
+                          {{ respondent }}{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </td>
+                    <td>{{ blotters.statement }}</td>
+                    <td>{{ blotters.location }}</td>
+                    <td>{{ blotters.date_created }}</td>
+                    <td>{{ blotters.status }}</td>
+                    <td scope="col">
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'AdEdBlotter' blotters.pk %}">Edit</a></button>
+                      <!-- <button type="button" class="btn btn-light rounded-pill" onclick="deleteBrgy({{ blotters.pk }})">Delete</button>                       -->
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+        <!-- Popup Form -->
+        <div class="modal fade" id="popupForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="popupFormLabel">Report Filter</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                      <form method="GET" id="filter-form">
+                        <div class="row align-items-center">
+                          <div class="col-lg-6">
+                              <label for="residenden">Residents</label>
+                              <select class="form-select" id="status">
+                                  <option value="all">All</option>
+                                  <option value="Pending">Pending</option>
+                                  <option value="Solved">Solved</option>
+                              </select>
+                          </div>
+                          <div class="col-lg-2">
+                            <button type="button" class="btn btn-light rounded-pill filter-btn" data-toggle="modal" onclick="printSelectedPurok()" data-purok="" data-residenden="">Print</button>
+                          </div>
+                      </div>
+                    </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <script>
+      $(document).ready(function() {
+
+        // Get the elements by their IDs
+        var componentsNav = document.getElementById('forms-nav');
+        var residentListItem = document.getElementById('Blotter');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+
+          $('.filter-btn').click(function() {      
+            var selectedstatus = $('#status').val();
+            $.ajax({
+              url: '/pdf_blotter_list/', 
+              method: 'GET',
+              data: { status: selectedstatus },
+
+              error: function() {
+                alert('Error occurred!');
+              }
+            });
+          });
+        });
+
+        function printSelectedPurok() {
+            // Get the selected value from the dropdown
+            var selectedStatus = document.getElementById('status').value;
+            
+            // Pass the selectedPurok to the openPrintPage function
+            openPrintPage(selectedStatus);
+        }
+
+        function openPrintPage(status) {
+            // Replace 'url_to_print' with the actual URL you want to print
+            var urlToPrint = '/pdf_blotter_list/?status=' + status;
+
+            // Open the URL in a new tab or window
+            window.open(urlToPrint, '_blank');
+        }
+
+      function deleteBrgy(pk) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                type: "POST",
+                url: "/Delete_resident/" + pk + "/",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function() {
+                    // Reload the content after successful deletion
+                    location.reload();
+                },
+                error: function() {
+                    alert("Error deleting the item.");
+                }
+            });
+        }
+      }
+
+      function deleteBrgy(pk) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                type: "POST",
+                url: "/Delete_blotter/" + pk + "/",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function() {
+                    // Reload the content after successful deletion
+                    location.reload();
+                },
+                error: function() {
+                    alert("Error deleting the item.");
+                }
+            });
+        }
+      }    
+    </script>
+{% endblock %}

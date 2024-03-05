@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+  <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootystrap.js' %}"></script>
+    <div class="pagetitle">
+      <h1>Households</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Household</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-body">
+            </br>
+            <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'AdEdHousehold' 0 %}">Add New Household</a></button>
+            <button type="button" class="btn btn-info rounded-pill report-btn" data-toggle="modal" data-target="#reportForm">Print</button>
+              
+            <!-- Search Form -->
+            
+            <div class="container">
+              <div class="row">
+                  <div class="col-lg-12">
+                  </br>
+                      <form method="GET" action="{% url 'HouseholdList' %}">
+                          <div class="input-group mb-3">
+                              <input type="text" name="houseno" value="{% if house_no %}{{ house_no }}{% endif %}" class="form-control" placeholder="Search House No.">
+                              <input type="text" name="street" value="{% if street_ %}{{ street_ }}{% endif %}" class="form-control" placeholder="Search Street">
+                              <input type="text" name="purok" value="{% if purok_ %}{{ purok_ }}{% endif %}" class="form-control" placeholder="Search Purok/Zone">
+                              <button type="submit" class="btn btn-info rounded-pill">Search</button>
+                          </div>
+                      </form>
+                  </div>
+            </div>
+            
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Zone/Purok</th>
+                    <th scope="col">Household No.</th>
+                    <th scope="col">Street</th>
+                    
+                    <th scope="col">No. of Residents</th>
+                    <th scope="col">Action</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for households in households %}
+                  <tr>     
+                    <td>{{ households.purok }}</td>
+                    <td>{{ households.house_no }}</td>
+                    <td>{{ households.address }}</td>
+                    
+                    <td>{{ households.resident_count }}</td>
+                    <td scope="col">
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'AdEdHousehold' households.pk %}">Edit/Update</a></button>
+                      <button type="button" class="btn btn-light rounded-pill view-details-btn" data-toggle="modal" data-target="#popupForm" data-sale-id="{{ households.id }}" data-hh-no="{{ households.house_no }}">View Members</button>
+                      <!-- <button type="button" class="btn btn-light rounded-pill" onclick="deleteBrgy({{ households.pk }})">Delete</button>  -->
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              
+              <div class="pagination">
+                <span class="step-links">
+                    {% if households.has_previous %}
+                        <!-- Include search parameters in pagination links for previous pages -->
+                        <a href="?page=1&houseno={{ house_no }}&street={{ street_ }}&purok={{ purok_ }}">&laquo; first</a>
+                        <a href="?page={{ households.previous_page_number }}&houseno={{ house_no }}&street={{ street_ }}&purok={{ purok_ }}">previous</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ households.number }} of {{ households.paginator.num_pages }}.
+                    </span>
+            
+                    {% if households.has_next %}
+                        <!-- Include search parameters in pagination links for next pages -->
+                        <a href="?page={{ households.next_page_number }}&houseno={{ house_no }}&street={{ street_ }}&purok={{ purok_ }}">next</a>
+                        <a href="?page={{ households.paginator.num_pages }}&houseno={{ house_no }}&street={{ street_ }}&purok={{ purok_ }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <!-- Popup Form -->
+  <div class="modal fade" id="popupForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="popupFormLabel1">Household Members</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table id="order-items-table" class="table">
+            <!-- Second Table -->
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Age</th> 
+                <th>Role</th>
+                <!-- <th>Action</th> -->
+              </tr>
+            </thead>
+            <tbody id="order-items-body">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+        <!-- Popup Form -->
+        <div class="modal fade" id="reportForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="popupFormLabel">Report Filter</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form method="GET" id="filter-form">
+                  <div class="row align-items-center">
+                    <div class="col-lg-7">
+                      <label for="purok">Purok/Zone</label>
+                      <select class="form-select" id="purok">
+                          <option value="0">All</option>
+                          {% for p in purok_list %}
+                          <option value="{{ p.pk }}">{{ p.purok_name }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-lg-2">
+                      <button type="button" class="btn btn-light rounded-pill filter-btn" data-toggle="modal" onclick="printSelectedPurok()" data-purok="" data-residenden="">Print</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <script>
+      $(document).ready(function() {
+
+        // Get the elements by their IDs
+        var componentsNav = document.getElementById('components-nav');
+        var residentListItem = document.getElementById('Household');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+
+          // Handle the "View Details" button click
+          $('.view-details-btn').click(function() {
+            var houseId = $(this).data('sale-id');
+            var hh_no = $(this).data('hh-no');
+            var residentsBody = $('#order-items-body');
+            // Clear existing order items from the table
+            residentsBody.empty();
+            document.getElementById('popupFormLabel1').innerHTML = "House No: " + hh_no 
+            // Make an AJAX request to retrieve the order items for the selected sale
+            $.ajax({
+              url: '/get_members/', // Replace with the actual URL to retrieve order items
+              method: 'GET',
+              data: { house_id: houseId },
+              success: function(response) {
+                // Iterate over the returned order items and add them to the table
+                if (response.residents.length <= 0){
+                  var noEntriesRow = '<tr><td colspan="3">No entries found.</td></tr>';
+                  residentsBody.append(noEntriesRow);
+                } else {
+                  for (var i = 0; i < response.residents.length; i++) {
+
+                    var res = response.residents[i];
+                    var headText = res.head === 'True' ? 'Head' : 'Member';
+                    var rowHtml = '<tr>' +
+                      
+                      '<td>' + res.name + '</td>' +
+                      '<td>' + res.gender + '</td>' +
+                      '<td>' + res.age + '</td>' +
+                      '<td>' + headText + '</td>' +
+                      
+                      '</tr>';
+
+                      residentsBody.append(rowHtml);
+                  }
+                }
+                
+              },
+              error: function(xhr, textStatus, errorThrown) {
+                  console.error('Error occurred:', errorThrown);
+                  alert('Error occurred! Please try again.');
+              }
+            });
+          });
+
+          $('.filter-btn').click(function() {      
+            var selectedPurok = $('#purok').val(); // Use jQuery to get the value
+            var Purok = $(this).data('purok');
+            if (Purok === undefined || Purok === "") {
+                Purok = selectedPurok;
+            }    
+            
+            $.ajax({
+              url: '/pdf_household_list/', 
+              method: 'GET',
+              data: { purok: selectedPurok},
+
+              error: function() {
+                alert('Error occurred!');
+              }
+            });
+          });
+          
+        });
+
+        function printSelectedPurok() {
+            // Get the selected value from the dropdown
+            var selectedPurok = document.getElementById('purok').value;
+            
+            // Pass the selectedPurok to the openPrintPage function
+            openPrintPage(selectedPurok);
+        }
+
+        function openPrintPage(purok, residenden) {
+            // Replace 'url_to_print' with the actual URL you want to print
+            var urlToPrint = '/pdf_household_list/?purok=' + purok;
+
+            // Open the URL in a new tab or window
+            window.open(urlToPrint, '_blank');
+        }
+
+      function deleteBrgy(pk) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                type: "POST",
+                url: "/Delete_household/" + pk + "/",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function() {
+                    // Reload the content after successful deletion
+                    location.reload();
+                },
+                error: function() {
+                    alert("Error deleting the item.");
+                }
+            });
+        }
+      } 
+      
+     
+    </script>
+{% endblock %}

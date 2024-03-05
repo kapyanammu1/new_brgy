@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Import Residents</title>
+</head>
+<body>
+
+<h2>Import Residents</h2>
+
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="file">Select an Excel file:</label>
+    <input type="file" name="file" accept=".xlsx, .xls">
+    <button type="submit">Upload</button>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+  <style>
+    #preview-image {
+        width: 300px; /* Set the desired width */
+        max-height: 280px; /* Set the maximum height */
+    }
+  </style>
+    <div class="pagetitle">
+      <h1>Resident Profile</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Profile</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section">
+      <div class="container">
+        <form method="post" enctype="multipart/form-data">
+        <div class="row justify-content-center">
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="card-body">
+                    
+                      {% csrf_token %}
+                      <div class="">
+                        </br>
+                        <center><p><img id="preview-image" src="{% if form.image.value.url %}
+                                                                  {{ form.image.value.url }}         
+                                                                {% else %}
+                                                                  /media/item_images/default.jpg
+                                                                {% endif %}" alt="Uploaded Image">
+                        </p></center>
+                        <p><input class="form-control" type="file" name="image" id="id_image" value="{{ form.image.value.url }}" onchange="previewImage(event)"></p>
+                        <p>{{ form.f_name.label_tag }} {{ form.f_name }}</p>
+                        <p>{{ form.m_name.label_tag }} {{ form.m_name }}</p>
+                        <p>{{ form.l_name.label_tag }} {{ form.l_name }}</p>
+                        <input type="number" name="house_id" id="house_id" value="{{ resident.house_no.id }}" style="display: none;">
+                        <p>Purok <select name="purok" class="form-select" id="purok" onchange="filterHouseNo()">
+                          {% for p in purok_list %}
+                              <!-- <option value="{{ p.pk }}">{{ p.purok_name }}</option> -->
+                              <option value="{{ p.pk }}" {% if p.pk == resident.house_no.purok.id %} selected {% endif %}>{{ p.purok_name }}</option>
+                          {% endfor %}
+                        </select></p>
+                        <p>Address <select name="house_no" class="form-select" id="id_house_no">
+                          
+                        </select></p>
+                        <p>{{ form.head.label_tag }} {{ form.head }}</p>
+                      </div>                       
+                  </div>
+                </div>
+              </div>
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-body">
+                  </br>
+                  <div class="row">
+                    
+                    <div class="col-md-6 ">
+                        <p>{{ form.gender.label_tag }} {{ form.gender }}</p>
+                        <p>{{ form.birth_date.label_tag }} {{ form.birth_date }}</p>
+                        <p>{{ form.birth_place.label_tag }} {{ form.birth_place }}</p>
+                        <p>{{ form.phone_number.label_tag }} {{ form.phone_number }}</p>
+                        <p>{{ form.civil_status.label_tag }} {{ form.civil_status }}</p>
+                        <p>{{ form.religion.label_tag }} {{ form.religion }}</p>
+                        <p>{{ form.citizenship.label_tag }} {{ form.citizenship }}</p>                     
+                    </div>
+                    <div class="col-md-6">
+                        <p>{{ form.profession.label_tag }} {{ form.profession }}</p>
+                        <p>{{ form.education.label_tag }} {{ form.education }}</p>
+                        <p>{{ form.family_income.label_tag }} {{ form.family_income }}</p>
+                        <p>{{ form.resident_type.label_tag }} {{ form.resident_type }}</p>
+                        <p>{{ form.osy.label_tag }} {{ form.osy }}</p>
+                        <p>{{ form.isy.label_tag }} {{ form.isy }}</p>
+                        {{ form.voter.label_tag }} {{ form.voter }}<p></p>
+                        <p> {{ form.precint_no }}</p>
+                        <p>{{ form.solo_parent.label_tag }} {{ form.solo_parent }}</p>
+                        <p>{{ form.pwd.label_tag }} {{ form.pwd }}</p>
+                        <p>{{ form.fourps.label_tag }} {{ form.fourps }}</p>
+                        <p>{{ form.indigent.label_tag }} {{ form.indigent }}</p>
+                        
+                    </div>
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                      <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        </form>
+      </div>
+    </section>
+    <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+    <script>
+      function filterHouseNo() {
+        var purokId = $('#purok').val();
+        var url = '/filter-house-no/' + purokId;
+        $.ajax({
+            url: url,
+            success: function(data, textStatus) {
+                $('#id_house_no').empty();
+                $.each(data.house_no, function(index, value) {
+                    $('#id_house_no').append('<option value="' + value.id + '">' + value.house_no + ' ' + value.address + '</option>');
+                });
+            }
+        });
+      }
+      $(document).ready(function() {
+        var house = $('#house_id').val();
+        var purokId = $('#purok').val();
+        var url = '/filter-house-no/' + purokId;
+        $.ajax({
+            url: url,
+            success: function(data, textStatus) {
+                $('#id_house_no').empty();
+                $.each(data.house_no, function(index, value) {
+                    $('#id_house_no').append('<option value="' + value.id + '">' + value.house_no + ' ' + value.address + '</option>');
+                });
+                if (house != ''){
+                  $('#id_house_no').val(house);
+                }
+                
+            }
+        });      
+
+        var componentsNav = document.getElementById('components-nav');
+        var residentListItem = document.getElementById('Resident');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+        
+          // Initially hide or disable the precint_no based on the default value of the checkbox
+          togglePrecinctVisibility();
+
+          // Add an event listener to the checkbox for changes
+          $('input[name="voter"]').change(function() {
+              // Call the function to toggle the visibility or disable status of precint_no
+              togglePrecinctVisibility();
+          });
+
+          function togglePrecinctVisibility() {
+              // Get the value of the checkbox
+              var isVoterChecked = $('input[name="voter"]').is(':checked');
+
+              // Select the precint_no field
+              var precintNoField = $('input[name="precint_no"]').closest('p');
+
+              // Toggle visibility or disable status based on the checkbox value
+              if (isVoterChecked) {
+                  precintNoField.show();  // or precintNoField.prop('disabled', false);
+              } else {
+                  precintNoField.hide();  // or precintNoField.prop('disabled', true);
+                  $('input[name="precint_no"]').val('');
+              }
+          }
+      });
+
+        function previewImage(event) {
+          var input = event.target;
+          var preview = document.getElementById('preview-image');
+
+          var reader = new FileReader();
+          reader.onload = function() {
+              preview.src = reader.result;
+          };
+
+          if (input.files && input.files[0]) {
+              reader.readAsDataURL(input.files[0]);
+          }
+        }
+    </script>
+    
+{% endblock %}

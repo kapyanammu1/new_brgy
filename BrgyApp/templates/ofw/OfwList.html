@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+  {% block content %}
+  {% load static %}
+  <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootystrap.js' %}"></script>
+    <div class="pagetitle">
+      <h1>OFW List</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">OFW List</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+            </br>
+              <button type="button" class="btn btn-info rounded-pill"><a href="{% url 'AdEdOfw' 0 %}">Add New OFW</a></button>
+              <button type="button" class="btn btn-info rounded-pill view-details-btn" data-toggle="modal" data-target="#popupForm">Print</button>
+              <table class="table datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Resident Name</th>
+                    <th scope="col">Passport Number</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Action</th>                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for o in ofw %}
+                  <tr id="{{ d.pk }}">                   
+                    <td>{{ o.resident }}</td>
+                    <td>{{ o.passport_no }}</td>
+                    <td>{{ o.country }}</td>
+                    <td scope="col">
+                      <button type="button" class="btn btn-light rounded-pill"><a href="{% url 'AdEdOfw' o.pk %}">Edit</a></button>
+                      <button type="button" class="btn btn-light rounded-pill" onclick="deleteBrgy({{ o.pk }})">Delete</button>                      
+                    </td>                 
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+          <!-- Popup Form -->
+    <div class="modal fade" id="popupForm" tabindex="-1" role="dialog" aria-labelledby="popupFormLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="popupFormLabel">Report Filter</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+                  <form method="GET" id="filter-form">
+                    <div class="row align-items-center">
+                      <div class="col-lg-8">
+                          <label for="purok">Purok/Zone</label>
+                          <select class="form-select" id="purok">
+                              <option value="0">All</option>
+                              {% for p in purok_list %}
+                              <option value="{{ p.pk }}">{{ p.purok_name }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                      <div class="col-lg-4">
+                        <button type="button" class="btn btn-light rounded-pill filter-btn" data-toggle="modal" onclick="printSelectedPurok()" data-purok="" data-residenden="">Print</button>
+                      </div>
+                  </div>
+                </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      
+      $(document).ready(function() {
+        var componentsNav = document.getElementById('components-nav');
+        var residentListItem = document.getElementById('Ofw');
+
+        // Change the class names
+        componentsNav.classList.remove('collapse');
+        componentsNav.classList.add('show');
+
+        residentListItem.classList.add('active');
+
+                $('.filter-btn').click(function() {      
+                  var selectedPurok = $('#purok').val(); // Use jQuery to get the value
+                  var selectedResidenden = $('#residenden').val();
+                  var Purok = $(this).data('purok');
+                  if (Purok === undefined || Purok === "") {
+                      Purok = selectedPurok;
+                  }    
+                  
+                  $.ajax({
+                    url: '/pdf_ofw_list/', 
+                    method: 'GET',
+                    data: { purok: selectedPurok },
+
+                    error: function() {
+                      alert('Error occurred!');
+                    }
+                  });
+                });
+              });
+              
+        function printSelectedPurok() {
+            // Get the selected value from the dropdown
+            var selectedPurok = document.getElementById('purok').value;
+            
+            // Pass the selectedPurok to the openPrintPage function
+            openPrintPage(selectedPurok);
+        }
+
+        function openPrintPage(purok, residenden) {
+            // Replace 'url_to_print' with the actual URL you want to print
+            var urlToPrint = '/pdf_ofw_list/?purok=' + purok;
+
+            // Open the URL in a new tab or window
+            window.open(urlToPrint, '_blank');
+        }
+
+      function deleteBrgy(pk) {
+        if (confirm("Are you sure you want to delete this item?")) {
+            $.ajax({
+                type: "POST",
+                url: "/Delete_ofw/" + pk + "/",
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function() {
+                    // Reload the content after successful deletion
+                    location.reload();
+                },
+                error: function() {
+                    alert("Error deleting the item.");
+                }
+            });
+        }
+      } 
+      
+     
+    </script>
+{% endblock %}

@@ -1,0 +1,1 @@
+web: gunicorn BrgySystem.wsgi --log-file -
