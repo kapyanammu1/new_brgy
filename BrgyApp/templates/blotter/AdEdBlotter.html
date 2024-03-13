@@ -33,12 +33,14 @@
               <!-- Vertical Form -->
               <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div>{{ form.complainants.errors }}</div>
                 <!-- #{{ form.as_p }} -->
                 <p>Complainant/s <select class="form-control select2" id="id_complainants" name="complainants" multiple>
                   {% for complainant in blotter.complainants.all %}
                     <option value="{{ complainant.pk }}" {% if complainant in form.initial.complainants.all %}selected{% endif %}>{{ complainant }}</option>
                   {% endfor %}
                 </select></p>
+                <div>{{ form.respondents.errors }}</div>
                 <p>Respondent/s <select class="form-control select2" id="id_respondents" name="respondents" multiple>
                   {% for respondent in blotter.respondents.all %}
                     <option value="{{ respondent.pk }}" {% if respondent in form.initial.respondents.all %}selected{% endif %}>{{ respondent }}</option>

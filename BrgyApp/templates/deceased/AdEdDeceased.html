@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
   {% block content %}
   {% load static %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <div class="pagetitle">
       <h1>Deceased</h1>
       <nav>
@@ -22,8 +23,22 @@
               <!-- Vertical Form -->
               <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div>{{ form.resident.errors }}</div>
                 <div class="col-6">
-                  {{ form.as_p }}   
+                  <!-- #{{ form.as_p }}  -->
+                  <!-- #<p>Resident <select class="form-control select2" id="id_respondents" name="respondents">
+                    #{% for option in form.deceased.field.choices %}
+                        #<option value="{{ option.0 }}" {% if option.0 == form.resident.value %}selected{% endif %}>{{ option.1 }}</option>
+                    #{% endfor %} -->
+                  <p>Resident: 
+                    <select class="form-control select2" id="id_resident" name="resident">
+                        <option value="{{ form.instance.resident.id }}" selected>{{ form.instance.resident }}</option>
+                    </select>
+                  </p>  
+                    <div>{{ form.date_of_death.errors }}</div>
+                    <p>Date of Death: {{ form.date_of_death }}</p>
+                    <p>Cause of Death: {{ form.cause_of_death }}</p>
+
                 </div>               
                 
                 <div class="text-center">
@@ -38,8 +53,56 @@
       </div>
     </section>  
     <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'assets/vendor/bootstrap/js/select2.min.js' %}"></script>
     <script>
+      function formatRepo (repo) {
+        if (repo.loading) {
+          return repo.text;
+        }
+        var markup = '<div class="clearfix">' +
+          '<div class="col-sm-12">' +
+            '<div class="clearfix">' +
+              '<div class="col-sm-8">' + repo.text + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+        return markup;
+      }
+
+      function formatRepoSelection (repo) {
+        return repo.text;
+      }
+
       $(document).ready(function() {
+        
+        $("#id_resident").select2({
+          ajax: {
+            url: '/api/residents/',
+            dataType: 'json',
+            delay: 50,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, params) {
+              params.page = params.page || 1;
+              return {
+                results: data.items,
+                pagination: {
+                  more: (params.page * 30) < data.total_count
+                }
+              };
+            },
+            cache: true
+          },
+          escapeMarkup: function (markup) { return markup; },
+          minimumInputLength: 1,
+          templateResult: formatRepo,
+          templateSelection: formatRepoSelection
+        });
+
         // Get the elements by their IDs
         var componentsNav = document.getElementById('components-nav');
         var residentListItem = document.getElementById('Deceased');

@@ -399,7 +399,7 @@ class DeceasedForm(forms.ModelForm):
         fields = ('resident', 'date_of_death', 'cause_of_death',)
         widgets = {
             'resident': forms.Select(attrs={
-            'class': 'form-select'
+            'class': 'form-control select2'
             }),
             'date_of_death': forms.DateInput(attrs={
             'class': 'form-control', 
@@ -409,6 +409,10 @@ class DeceasedForm(forms.ModelForm):
             'class': 'form-control'
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['resident'].required = True  # Marking 'resident' field as required
 
 class OfwForm(forms.ModelForm):
     class Meta:
@@ -610,7 +614,7 @@ class BrgyClearanceForm(forms.ModelForm):
         fields = ('resident', 'purpose', 'or_no', 'or_amount', 'or_date', 'ctc', 'ctc_amount', 'ctc_date',)
         widgets = {
             'resident': forms.TextInput(attrs={
-            'class': 'form-control'
+            'class': 'form-control select2'
             }),
             'purpose': forms.TextInput(attrs={
             'class': 'form-control'
@@ -652,7 +656,7 @@ class BrgyCertificateForm(forms.ModelForm):
         fields = ('resident', 'purpose', 'or_no', 'or_amount', 'or_date', 'ctc', 'ctc_amount', 'ctc_date',)
         widgets = {
             'resident': forms.Select(attrs={
-            'class': 'form-select'
+            'class': 'form-control select2'
             }),
             'purpose': forms.TextInput(attrs={
             'class': 'form-control'

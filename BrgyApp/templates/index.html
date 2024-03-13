@@ -284,9 +284,17 @@
                     <tbody id="SalesList">
                       {% for item in blotter %}
                       <tr>     
-                        <td>{{item.case_no}}</td>                 
-                        <td>{{item.complainants}}</td>
-                        <td>{{item.respondents}}</td>
+                        <td>{{item.case_no}}</td>
+                        <td>
+                          {% for complainant in item.complainants.all %}
+                              {{ complainant }}{% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                        </td>
+                        <td>
+                          {% for respondent in item.respondents.all %}
+                              {{ respondent }}{% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                        </td>                 
                         <td>{{item.case}}</td>
                         <td>{{item.date_created}}</td>
                         <td>{{item.status}}</td>

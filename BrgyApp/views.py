@@ -59,6 +59,40 @@ month_names = {
     12: "December"
 }
 
+def AdEd(request, instance=None, form_class=None, template=None, redirect_to=None, additional_context=None):
+    try:
+        if request.method == 'POST':
+            form = form_class(request.POST, request.FILES, instance=instance)
+            if form.is_valid():
+                form.save()
+                return redirect(redirect_to)
+        else:
+            form = form_class(instance=instance)
+
+        context = {'form': form, 'instance': instance}
+        
+        # Add additional context if provided
+        if additional_context:
+            context.update(additional_context)
+
+        return render(request, template, context)
+    except Http404:
+        if request.method == 'POST':
+            form = form_class(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect(redirect_to)
+        else:
+            form = form_class()
+
+        context = {'form': form}
+
+        # Add additional context if provided
+        if additional_context:
+            context.update(additional_context)
+
+        return render(request, template, context)
+
 def export_residents_to_excel(file_path='residents.xlsx'):
     # Query all residents from the database
     residents = Resident.objects.all().order_by('house_no__purok')
@@ -163,7 +197,7 @@ def Users(request):
 @login_required
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 def AdEdUsers(request, pk):
-    has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
+    has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')
     try:
         user = get_object_or_404(CustomUser, pk=pk)
         if request.method == 'POST':
@@ -244,7 +278,7 @@ def index(request):
     #     final_date = thisYear
 
     blotter = Blotter.objects.filter(status='Pending').order_by("date_created")
-    
+
     brgyClearance_total = brgyclearance.filter(date_created__year=thisYear).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
     brgyCert_total = BrgyCertificate.objects.filter(date_created__year=thisYear).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
     total_count_BrgyclearCert = brgyClearance_total['total_count']  + brgyCert_total['total_count']
@@ -254,7 +288,7 @@ def index(request):
     businessCert_total = BusinessCertificate.objects.filter(date_created__year=thisYear).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
     total_count_BusclearCert = brgyClearance_total['total_count']  + brgyCert_total['total_count']
     total_BusclearCert = 0#businessClearance_total['total_amount']  + businessCert_total['total_amount']
-    
+
     residency_total = residency.filter(date_created__year=thisYear).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
     indigency_total = indigency.filter(date_created__year=thisYear).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
     soloparent_total = soloparent.filter(date_created__year=thisYear).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
@@ -266,7 +300,7 @@ def index(request):
 
     # brgyClearance_monthly = brgyclearance.filter(or_date__year=thisYear).annotate(date_month=TruncMonth('or_date')).values('date_month').annotate(total_amount=Sum('or_amount'), total_count=Count('id')).distinct()
     # businessClearance_monthly = businessclearance.filter(or_date__year=thisYear).annotate(date_month=TruncMonth('or_date')).values('date_month').annotate(total_amount=Sum('or_amount')).distinct()
-    
+
     series1 = []
     series2 = []
     series3 = []
@@ -286,7 +320,7 @@ def index(request):
         bus_cert = BusinessCertificate.objects.filter(or_date__month=m).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
         values2 = businessclearance.filter(or_date__month=m).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
         total_busClearance = values2['total_amount'] if values2['total_amount'] is not None else 0
-        total_total_busCert = bus_cert['total_amount'] if brgyCert['total_amount'] is not None else 0
+        total_total_busCert = bus_cert['total_amount'] if bus_cert['total_amount'] is not None else 0
         t1 = total_busClearance + total_total_busCert
         series2.append(t1 or 0)
         values3 = residency.filter(or_date__month=m).aggregate(total_amount=Sum('or_amount'), total_count=Count('id'))
@@ -3937,386 +3971,257 @@ def AdEdPurok(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')     
     try:
         purok = get_object_or_404(Purok, pk=pk)
-        if request.method == 'POST':
-            form = PurokForm(request.POST, request.FILES, instance=purok)
-            if form.is_valid():
-                form.save()
-                return redirect('PurokList')
-        else:
-            form = PurokForm(instance=purok)
-        return render(request, 'purok/AdEdPurok.html', {'form': form, 'purok': purok, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = PurokForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('PurokList')
-        else:
-            form = PurokForm()
-        return render(request, 'purok/AdEdPurok.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        purok=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=purok,
+        form_class=PurokForm, 
+        template='purok/AdEdPurok.html',
+        redirect_to='PurokList',
+        additional_context=additional_context
+    )
     
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required    
 def AdEdHousehold(request, pk):
-    has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')   
+    has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')        
     try:
         household = get_object_or_404(Household, pk=pk)
-        if request.method == 'POST':
-            form = HouseholdForm(request.POST, request.FILES, instance=household)
-            if form.is_valid():
-                form.save()
-                return redirect('HouseholdList')
-        else:
-            form = HouseholdForm(instance=household)
-        return render(request, 'household/AdEdHousehold.html', {'form': form, 'household': household, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = HouseholdForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('HouseholdList')
-        else:
-            form = HouseholdForm()
-        return render(request, 'household/AdEdHousehold.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        household=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=household,
+        form_class=HouseholdForm, 
+        template='household/AdEdHousehold.html',
+        redirect_to='HouseholdList',
+        additional_context=additional_context
+    )
     
 @login_required    
 def AdEdJobSeekers(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         jobseekers = get_object_or_404(JobSeekers, pk=pk)
-        name = jobseekers.resident.l_name + ', ' + jobseekers.resident.f_name + ' ' + jobseekers.resident.m_name
-        if request.method == 'POST':
-            form = JobSeekersForm(request.POST, request.FILES, instance=jobseekers)
-            if form.is_valid():
-                form.save()
-                # pdf_buffer = generate_pdf_report()
-                # return pdf_report_view(pdf_buffer)
-                return redirect('JobSeekersList')
-        else:
-            form = JobSeekersForm(instance=jobseekers)
-        return render(request, 'jobseekers/AdEdJobSeekers.html', {'form': form, 'jobseekers': jobseekers, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        resident = Resident.objects.all()
-        if request.method == 'POST':
-            form = JobSeekersForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()                
-                return redirect('JobSeekersList')               
-        else:
-            form = JobSeekersForm()
-        return render(request, 'jobseekers/AdEdJobSeekers.html', {'form': form, 'resident': resident, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        jobseekers=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=jobseekers,
+        form_class=JobSeekersForm, 
+        template='jobseekers/AdEdJobSeekers.html',
+        redirect_to='JobSeekersList',
+        additional_context=additional_context
+    )
 
 @login_required    
 def AdEdBrgyClearance(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         brgyclearance = get_object_or_404(BrgyClearance, pk=pk)
-        name = brgyclearance.resident.l_name + ', ' + brgyclearance.resident.f_name + ' ' + brgyclearance.resident.m_name
-        if request.method == 'POST':
-            form = BrgyClearanceForm(request.POST, request.FILES, instance=brgyclearance)
-            if form.is_valid():
-                form.save()
-                # pdf_buffer = generate_pdf_report()
-                # return pdf_report_view(pdf_buffer)
-                return redirect('BrgyClearanceList')
-        else:
-            form = BrgyClearanceForm(instance=brgyclearance)
-        return render(request, 'brgyclearance/AdEdBrgyClearance.html', {'form': form, 'brgyclearance': brgyclearance, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        resident = Resident.objects.all()
-        
-        if request.method == 'POST':
-            form = BrgyClearanceForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()                
-                return redirect('BrgyClearanceList')    
-            else:
-                print(form.errors)           
-        else:
-            form = BrgyClearanceForm()
-        return render(request, 'brgyclearance/AdEdBrgyClearance.html', {'form': form, 'resident': resident, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        brgyclearance=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=brgyclearance,
+        form_class=BrgyClearanceForm, 
+        template='brgyclearance/AdEdBrgyClearance.html',
+        redirect_to='BrgyClearanceList',
+        additional_context=additional_context
+    )
 
 @login_required    
 def AdEdBrgyCertificate(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         brgycertificate = get_object_or_404(BrgyCertificate, pk=pk)
-        name = brgycertificate.resident.l_name + ', ' + brgycertificate.resident.f_name + ' ' + brgycertificate.resident.m_name
-        if request.method == 'POST':
-            form = BrgyCertificateForm(request.POST, request.FILES, instance=brgycertificate)
-            if form.is_valid():
-                form.save()
-                # pdf_buffer = generate_pdf_report()
-                # return pdf_report_view(pdf_buffer)
-                return redirect('BrgyCertificateList')
-        else:
-            form = BrgyCertificateForm(instance=brgycertificate)
-        return render(request, 'brgyclearance/AdEdBrgyCert.html', {'form': form, 'brgyclearance': brgycertificate, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        resident = Resident.objects.all()
-        
-        if request.method == 'POST':
-            form = BrgyCertificateForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()                
-                return redirect('BrgyCertificateList')    
-            else:
-                print(form.errors)           
-        else:
-            form = BrgyCertificateForm()
-        return render(request, 'brgyclearance/AdEdBrgyCert.html', {'form': form, 'resident': resident, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        brgycertificate=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=brgycertificate,
+        form_class=BrgyCertificateForm, 
+        template='brgyclearance/AdEdBrgyCert.html',
+        redirect_to='BrgyCertificateList',
+        additional_context=additional_context
+    )
 
 @login_required    
 def AdEdDeathClaimCertificate(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         deathclaimCertificate = get_object_or_404(DeathClaimCertificate, pk=pk)
-        #name = deathclaimCertificate.resident.l_name + ', ' + deathclaimCertificate.resident.f_name + ' ' + brgycertificate.resident.m_name
-        if request.method == 'POST':
-            form = DeathClaimCertificateForm(request.POST, request.FILES, instance=deathclaimCertificate)
-            if form.is_valid():
-                form.save()
-                # pdf_buffer = generate_pdf_report()
-                # return pdf_report_view(pdf_buffer)
-                return redirect('DeathClaimCertificateList')
-        else:
-            form = DeathClaimCertificateForm(instance=deathclaimCertificate)
-        return render(request, 'deceased/AdEdDeathclaimCertificate.html', {'form': form, 'deathclaimCertificate': deathclaimCertificate, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = DeathClaimCertificateForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()                
-                return redirect('DeathClaimCertificateList')    
-            else:
-                print(form.errors)           
-        else:
-            form = DeathClaimCertificateForm()
-        return render(request, 'deceased/AdEdDeathclaimCertificate.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        deathclaimCertificate=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=deathclaimCertificate,
+        form_class=DeathClaimCertificateForm, 
+        template='deceased/AdEdDeathclaimCertificate.html',
+        redirect_to='DeathClaimCertificateList',
+        additional_context=additional_context
+    )
 
 @login_required    
 def AdEdTribal(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         tribal = get_object_or_404(CertTribal, pk=pk)
-        if request.method == 'POST':
-            form = CertTribalForm(request.POST, request.FILES, instance=tribal)
-            if form.is_valid():
-                form.save()
-                # pdf_buffer = generate_pdf_report()
-                # return pdf_report_view(pdf_buffer)
-                return redirect('CertTribalList')
-        else:
-            form = CertTribalForm(instance=tribal)
-        return render(request, 'certtribal/AdEdCertTribal.html', {'form': form, 'tribal': tribal, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = CertTribalForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                
-                return redirect('CertTribalList')
-                
-        else:
-            form = CertTribalForm()
-        return render(request, 'certtribal/AdEdCertTribal.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        tribal=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=tribal,
+        form_class=CertTribalForm, 
+        template='certtribal/AdEdCertTribal.html',
+        redirect_to='CertTribalList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdCertGoodMoral(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         certgoodmoral = get_object_or_404(CertGoodMoral, pk=pk)
-        name = certgoodmoral.resident.l_name + ', ' + certgoodmoral.resident.f_name + ' ' + certgoodmoral.resident.m_name
-        if request.method == 'POST':
-            form = CertGoodMoralForm(request.POST, request.FILES, instance=certgoodmoral)
-            if form.is_valid():
-                form.save()
-                return redirect('CertGoodMoralList')
-        else:
-            form = CertGoodMoralForm(instance=certgoodmoral)
-        return render(request, 'certgoodmoral/AdEdCertGoodmoral.html', {'form': form, 'certgoodmoral': certgoodmoral, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        if request.method == 'POST':
-            form = CertGoodMoralForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('CertGoodMoralList')
-        else:
-            form = CertGoodMoralForm()
-        return render(request, 'certgoodmoral/AdEdCertGoodmoral.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        certgoodmoral=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=certgoodmoral,
+        form_class=CertGoodMoralForm, 
+        template='certgoodmoral/AdEdCertGoodmoral.html',
+        redirect_to='CertGoodMoralList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdCertResidency(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         certresidency = get_object_or_404(CertResidency, pk=pk)
-        name = certresidency.resident.l_name + ', ' + certresidency.resident.f_name + ' ' + certresidency.resident.m_name
-        if request.method == 'POST':
-            form = CertResidencyForm(request.POST, request.FILES, instance=certresidency)
-            if form.is_valid():
-                form.save()
-                return redirect('CertResidencyList')
-        else:
-            form = CertResidencyForm(instance=certresidency)
-        return render(request, 'certresidency/AdEdCertResidency.html', {'form': form, 'certresidency': certresidency, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        if request.method == 'POST':
-            form = CertResidencyForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('CertResidencyList')
-        else:
-            form = CertResidencyForm()
-        return render(request, 'certresidency/AdEdCertResidency.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        certresidency=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=certresidency,
+        form_class=CertResidencyForm, 
+        template='certresidency/AdEdCertResidency.html',
+        redirect_to='CertResidencyList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdCertIndigency(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         certindigency = get_object_or_404(CertIndigency, pk=pk)
-        name = certindigency.resident.l_name + ', ' + certindigency.resident.f_name + ' ' + certindigency.resident.m_name
-        if request.method == 'POST':
-            form = CertIndigencyForm(request.POST, request.FILES, instance=certindigency)
-            if form.is_valid():
-                form.save()
-
-                resident = certindigency.resident
-                resident.indigent = True
-                resident.save()
-                return redirect('CertIndigencyList')
-        else:
-            form = CertIndigencyForm(instance=certindigency)
-        return render(request, 'certindigency/AdEdCertIndigency.html', {'form': form, 'certindigency': certindigency, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        if request.method == 'POST':
-            form = CertIndigencyForm(request.POST, request.FILES)
-            if form.is_valid():
-                certindigency = form.save()
-
-                resident = certindigency.resident
-                resident.indigent = True
-                resident.save()
-                return redirect('CertIndigencyList')
-        else:
-            form = CertIndigencyForm()
-        return render(request, 'certindigency/AdEdCertIndigency.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        certindigency=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=certindigency,
+        form_class=CertIndigencyForm, 
+        template='certindigency/AdEdCertIndigency.html',
+        redirect_to='CertIndigencyList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdCertSoloParent(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         certsoloparent = get_object_or_404(CertSoloParent, pk=pk)
-        name = certsoloparent.resident.l_name + ', ' + certsoloparent.resident.f_name + ' ' + certsoloparent.resident.m_name
-        if request.method == 'POST':
-            form = CertSoloParentForm(request.POST, request.FILES, instance=certsoloparent)
-            if form.is_valid():
-                form.save()
-                resident = certsoloparent.resident
-                resident.solo_parent = True
-                resident.save()
-                return redirect('CertSoloParentList')
-        else:
-            form = CertSoloParentForm(instance=certsoloparent)
-        return render(request, 'certsoloparent/AdEdCertSoloparent.html', {'form': form, 'certsoloparent': certsoloparent, 'has_admin_permission': has_admin_permission, 'name': name})
-    except Http404:  
-        if request.method == 'POST':
-            form = CertSoloParentForm(request.POST, request.FILES)
-            if form.is_valid():
-                certsoloparent = form.save()
-
-                resident = certsoloparent.resident
-                resident.solo_parent = True
-                resident.save()
-                return redirect('CertSoloParentList')
-        else:
-            form = CertSoloParentForm()
-        return render(request, 'certsoloparent/AdEdCertSoloparent.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        certsoloparent=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=certsoloparent,
+        form_class=CertSoloParentForm, 
+        template='certsoloparent/AdEdCertSoloparent.html',
+        redirect_to='CertSoloParentList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdCertNonOperation(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         certnonoperation = get_object_or_404(CertNonOperation, pk=pk)
-        if request.method == 'POST':
-            form = CertNonOperationForm(request.POST, request.FILES, instance=certnonoperation)
-            if form.is_valid():
-                form.save()
-                certnonoperation = certnonoperation.business
-                certnonoperation.status = 'INACTIVE'
-                certnonoperation.save()
-                return redirect('CertNonOperationList')
-        else:
-            form = CertNonOperationForm(instance=certnonoperation)
-        return render(request, 'certnonoperation/AdEdCertNonoperation.html', {'form': form, 'certnonoperation': certnonoperation, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = CertNonOperationForm(request.POST, request.FILES)
-            if form.is_valid():
-                certnonoperation = form.save()
-                certnonoperation = certnonoperation.business
-                certnonoperation.status = 'INACTIVE'
-                certnonoperation.save()
-                return redirect('CertNonOperationList')
-        else:
-            form = CertNonOperationForm()
-        return render(request, 'certnonoperation/AdEdCertNonoperation.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        certnonoperation=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=certnonoperation,
+        form_class=CertNonOperationForm, 
+        template='certnonoperation/AdEdCertNonoperation.html',
+        redirect_to='CertNonOperationList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdBusinessClearance(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         businessclearance = get_object_or_404(BusinessClearance, pk=pk)
-        if request.method == 'POST':
-            form = BusinessClearanceForm(request.POST, request.FILES, instance=businessclearance)
-            if form.is_valid():
-                form.save()
-                businessclearance = businessclearance.business
-                businessclearance.status = 'ACTIVE'
-                businessclearance.save()
-                return redirect('BusinessClearanceList')
-        else:
-            form = BusinessClearanceForm(instance=businessclearance)
-        return render(request, 'businessclearance/AdEdBusinessClearance.html', {'form': form, 'businessclearance': businessclearance, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = BusinessClearanceForm(request.POST, request.FILES)
-            if form.is_valid():
-                businessclearance = form.save()
-                businessclearance = businessclearance.business
-                businessclearance.status = 'ACTIVE'
-                businessclearance.save()
-                return redirect('BusinessClearanceList')
-        else:
-            form = BusinessClearanceForm()
-        return render(request, 'businessclearance/AdEdBusinessClearance.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        businessclearance=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=businessclearance,
+        form_class=BusinessClearanceForm, 
+        template='businessclearance/AdEdBusinessClearance.html',
+        redirect_to='BusinessClearanceList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdBusinessCertificate(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         businesscert = get_object_or_404(BusinessCertificate, pk=pk)
-        if request.method == 'POST':
-            form = BusinessCertificateForm(request.POST, request.FILES, instance=businesscert)
-            if form.is_valid():
-                form.save()
-                return redirect('BusinessCertificateList')
-        else:
-            form = BusinessCertificateForm(instance=businesscert)
-        return render(request, 'businessclearance/AdEdBusinessCert.html', {'form': form, 'businesscert': businesscert, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = BusinessCertificateForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('BusinessCertificateList')
-        else:
-            form = BusinessCertificateForm()
-        return render(request, 'businessclearance/AdEdBusinessCert.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        businesscert=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=businesscert,
+        form_class=BusinessCertificateForm, 
+        template='businessclearance/AdEdBusinessCert.html',
+        redirect_to='BusinessCertificateList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdBlotter(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
-    
     try:
         blotter = get_object_or_404(Blotter, pk=pk)
         if request.method == 'POST':
@@ -4351,48 +4256,36 @@ def AdEdSummon(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         summon = get_object_or_404(Summon, pk=pk)
-        #name = summon.resident.l_name + ', ' + summon.resident.f_name + ' ' + summon.resident.m_name
-        if request.method == 'POST':
-            form = SummonForm(request.POST, request.FILES, instance=summon)
-            if form.is_valid():
-                form.save()
-                return redirect('SummonList')
-        else:
-            form = SummonForm(instance=summon)
-        return render(request, 'Summon/AdEdSummon.html', {'form': form, 'summon': summon, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = SummonForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('SummonList')
-        else:
-            form = SummonForm()
-        return render(request, 'Summon/AdEdSummon.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        summon=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=summon,
+        form_class=SummonForm, 
+        template='Summon/AdEdSummon.html',
+        redirect_to='SummonList',
+        additional_context=additional_context
+    )
 
 @login_required
 def AdEdFileAction(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         filecation = get_object_or_404(FileAction, pk=pk)
-        #name = summon.resident.l_name + ', ' + summon.resident.f_name + ' ' + summon.resident.m_name
-        if request.method == 'POST':
-            form = FileActionForm(request.POST, request.FILES, instance=filecation)
-            if form.is_valid():
-                form.save()
-                return redirect('FileActionList')
-        else:
-            form = FileActionForm(instance=filecation)
-        return render(request, 'Summon/AdEdFileAction.html', {'form': form, 'filecation': filecation, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = FileActionForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('FileActionList')
-        else:
-            form = FileActionForm()
-        return render(request, 'Summon/AdEdFileAction.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        filecation=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=filecation,
+        form_class=FileActionForm, 
+        template='Summon/AdEdFileAction.html',
+        redirect_to='FileActionList',
+        additional_context=additional_context
+    )
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required
@@ -4400,50 +4293,38 @@ def AdEdBusiness(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')  
     try:
         business = get_object_or_404(Business, pk=pk)
-        if request.method == 'POST':
-            form = BusinessForm(request.POST, request.FILES, instance=business)
-            if form.is_valid():
-                form.save()
-                return redirect('BusinessList')
-        else:
-            form = BusinessForm(instance=business)
-        return render(request, 'business/AdEdBusiness.html', {'form': form, 'business': business, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = BusinessForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-
-                return redirect('BusinessList')
-        else:
-            form = BusinessForm()
-        return render(request, 'business/AdEdBusiness.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        business=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=business,
+        form_class=BusinessForm, 
+        template='business/AdEdBusiness.html',
+        redirect_to='BusinessList',
+        additional_context=additional_context
+    )
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required
 def AdEdResident(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')  
     purok_list= Purok.objects.all().order_by("purok_name") 
-
     try:
-        resident = get_object_or_404(Resident, pk=pk)        
-        if request.method == 'POST':
-            form = ResidentForm(request.POST, request.FILES, instance=resident)
-            if form.is_valid():
-                form.save()
-                return redirect('ResidentList')
-        else:
-            form = ResidentForm(instance=resident)
-        return render(request, 'resident/AdEdResident.html', {'form': form, 'resident': resident, 'purok_list': purok_list, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = ResidentForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('ResidentList')
-        else:
-            form = ResidentForm()
-        return render(request, 'resident/AdEdResident.html', {'form': form, 'purok_list': purok_list, 'has_admin_permission': has_admin_permission})
+        resident = get_object_or_404(Resident, pk=pk)
+    except Http404:
+        resident=None
+    
+    additional_context = {'purok_list': purok_list, 'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=resident,
+        form_class=ResidentForm, 
+        template='resident/AdEdResident.html',
+        redirect_to='ResidentList',
+        additional_context=additional_context
+    )
 
 @login_required
 def filter_house_no(request, purok_id):
@@ -4482,23 +4363,18 @@ def AdEdDeceased(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')  
     try:
         deceased = get_object_or_404(Deceased, pk=pk)
-        if request.method == 'POST':
-            form = DeceasedForm(request.POST, request.FILES, instance=deceased)
-            if form.is_valid():
-                form.save()
-                return redirect('DeceasedList')
-        else:
-            form = DeceasedForm(instance=deceased)
-        return render(request, 'deceased/AdEdDeceased.html', {'form': form, 'deceased': deceased, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = DeceasedForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('DeceasedList')
-        else:
-            form = DeceasedForm()
-        return render(request, 'deceased/AdEdDeceased.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        deceased=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=deceased,
+        form_class=DeceasedForm, 
+        template='deceased/AdEdDeceased.html',
+        redirect_to='DeceasedList',
+        additional_context=additional_context
+    )
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required
@@ -4506,23 +4382,18 @@ def AdEdOfw(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')  
     try:
         ofw = get_object_or_404(Ofw, pk=pk)
-        if request.method == 'POST':
-            form = OfwForm(request.POST, request.FILES, instance=ofw)
-            if form.is_valid():
-                form.save()
-                return redirect('OfwList')
-        else:
-            form = OfwForm(instance=ofw)
-        return render(request, 'ofw/AdEdOfw.html', {'form': form, 'ofw': ofw, 'has_admin_permission': has_admin_permission})
-    except Http404:  
-        if request.method == 'POST':
-            form = OfwForm(request.POST, request.FILES)
-            if form.is_valid():
-                form.save()
-                return redirect('OfwList')
-        else:
-            form = OfwForm()
-        return render(request, 'ofw/AdEdOfw.html', {'form': form, 'has_admin_permission': has_admin_permission})
+    except Http404:
+        ofw=None
+    
+    additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
+    return AdEd(
+        request,
+        instance=ofw,
+        form_class=OfwForm, 
+        template='ofw/AdEdOfw.html',
+        redirect_to='OfwList',
+        additional_context=additional_context
+    )
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required

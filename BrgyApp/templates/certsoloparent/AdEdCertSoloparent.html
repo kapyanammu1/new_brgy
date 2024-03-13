@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
   {% block content %}
   {% load static %}
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
   <style>
     #searchForm .modal-dialog {
         max-width: 800px; /* Adjust the width as needed */
@@ -29,14 +30,19 @@
               <!-- Vertical Form -->
               <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div>{{ form.resident.errors }}</div>
                 <div class="col-6">
-                  <p>
+                  <!-- <p>
                     Resident:
-                    <input type="text" id="resident" value="{{ name }}" class="form-control" placeholder="Enter Resident Name" disabled>
-                    <input type="text" value="{{ form.resident.value }}" name="resident" id="id_resident" class="form-control" placeholder="id" style="display: none;">
+                    #<input type="text" id="resident" value="{{ name }}" class="form-control" placeholder="Enter Resident Name" disabled>
+                    #<input type="text" value="{{ form.resident.value }}" name="resident" id="id_resident" class="form-control" placeholder="id" style="display: none;">
                     <button type="button" class="btn btn-info rounded-pill view-details-btn" data-toggle="modal" data-target="#searchForm">Choose Resident</button>
-                    <!-- style="display: none; -->
-                  </p>
+                  </p> -->
+                  <p>Resident: 
+                    <select class="form-control select2" id="id_resident" name="resident">
+                        <option value="{{ form.instance.resident.id }}" selected>{{ form.instance.resident }}</option>
+                    </select>
+                  </p>  
                   <p>{{ form.purpose.label_tag }} {{ form.purpose }}</p>
                   <p>{{ form.or_no.label_tag }} {{ form.or_no }}</p>
                   <p>{{ form.or_amount.label_tag }} {{ form.or_amount }}</p>
@@ -103,8 +109,56 @@
 
     <script src="{% static 'assets/vendor/bootstrap/js/jquery-3.6.0.min.js' %}"></script>
     <script src="{% static 'assets/vendor/bootstrap/js/bootystrap.js' %}"></script>
+    <script src="{% static 'assets/vendor/bootstrap/js/select2.min.js' %}"></script>
     <script>
+      function formatRepo (repo) {
+        if (repo.loading) {
+          return repo.text;
+        }
+        var markup = '<div class="clearfix">' +
+          '<div class="col-sm-12">' +
+            '<div class="clearfix">' +
+              '<div class="col-sm-8">' + repo.text + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+        return markup;
+      }
+
+      function formatRepoSelection (repo) {
+        return repo.text;
+      }
+
       $(document).ready(function() {
+
+        $("#id_resident").select2({
+          ajax: {
+            url: '/api/residents/',
+            dataType: 'json',
+            delay: 50,
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, params) {
+              params.page = params.page || 1;
+              return {
+                results: data.items,
+                pagination: {
+                  more: (params.page * 30) < data.total_count
+                }
+              };
+            },
+            cache: true
+          },
+          escapeMarkup: function (markup) { return markup; },
+          minimumInputLength: 1,
+          templateResult: formatRepo,
+          templateSelection: formatRepoSelection
+        });
+        
         // Get the elements by their IDs
         var componentsNav = document.getElementById('forms-nav');
         var residentListItem = document.getElementById('SoloParent');

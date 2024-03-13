@@ -10,11 +10,11 @@
   </style>
 
     <div class="pagetitle">
-      <h1>Barangay Clearance</h1>
+      <h1>Death Person CLaim Certificate</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-          <li class="breadcrumb-item active">Barangay Clearance</li>
+          <li class="breadcrumb-item active">Death Person CLaim Certificate</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -29,6 +29,7 @@
               <!-- Vertical Form -->
               <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div>{{ form.deceased.errors }}</div>
                 <div class="col-6">
                     <p>{{ form.deceased.label_tag }} {{ form.deceased }}</p>
                     <p>{{ form.claimant.label_tag }} {{ form.claimant }}</p>

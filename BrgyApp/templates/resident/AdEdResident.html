@@ -25,6 +25,7 @@
                   <div class="card-body">
                     
                       {% csrf_token %}
+                      <div>{{ form.resident.errors }}</div>
                       <div class="">
                         </br>
                         <center><p><img id="preview-image" src="{% if form.image.value.url %}
