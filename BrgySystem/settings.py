@@ -110,7 +110,8 @@ DATABASES = {
         'NAME': 'dbBrgy',
         'USER': 'postgres',
         'PASSWORD': 'kapyanammuPassword',
-        'HOST': 'localhost',
+        'HOST': 'db',
+        # 'HOST': 'localhost',
         'PORT': '5432',
     }
 }
