@@ -1581,13 +1581,15 @@ def report_body_deceased(p, y_position, line_height, purok_id):
     return p
 
 def report_body_deathclaimcert(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo_path = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
     # Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyCertTitle.jpg")  
-    p.drawImage(brgy_logo, 105, 273, width=380, height=380) #brgy logo
+    p.drawImage(brgy_logo_path, 105, 273, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
     
     def get_day_with_suffix(day):
@@ -1714,11 +1716,15 @@ def report_body_business(p, y_position, line_height, purok_id, status):
 def report_brgyOfficials(p, y_position, footer_text):
     officials = Brgy_Officials.objects.first()  
     twelve_space = 12
+    current_file_path = os.path.abspath(__file__)
     image_filename = "sidepanel.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    image_path = os.path.join(media_folder, image_filename)
+
+    # Construct the full path to the image file
+    # image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
     p.drawImage(image_path, 30, 20, width=160, height=800)
     p.setFont("Helvetica-Bold", 12)
     p.setFillColorRGB(0.12, 0.29, 0.49)
@@ -1957,11 +1963,13 @@ def report_body_JobSeekers(p, y_position, line_height, pk):
     return p
 
 def report_body_Summon(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     # Frame = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "frame.png")
     p.drawImage(brgy_logo, 120, 200, width=380, height=380) #brgy logo
@@ -2054,11 +2062,14 @@ def report_body_Summon(p, y_position, line_height, pk):
     return p
 
 def report_body_FileAction(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     # Frame = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "frame.png")
     p.drawImage(brgy_logo, 120, 200, width=380, height=380) #brgy logo
@@ -2162,11 +2173,14 @@ def report_body_FileAction(p, y_position, line_height, pk):
     return p
 
 def report_body_brgyClearance(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyCertTitle.jpg")
     
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
@@ -2255,11 +2269,14 @@ def report_body_brgyClearance(p, y_position, line_height, pk):
     return p
 
 def report_body_brgyCertificate(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyCertTitle.jpg")  
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
@@ -2329,11 +2346,14 @@ def report_body_brgyCertificate(p, y_position, line_height, pk):
     return p
 
 def report_body_deathCert(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyCertTitle.jpg")  
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
@@ -2500,11 +2520,14 @@ def report_body_tribal(p, y_position, line_height, pk):
     return p
 
 def report_body_goodmoral(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyCertTitle.jpg")  
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
@@ -2574,11 +2597,14 @@ def report_body_goodmoral(p, y_position, line_height, pk):
     return p
 
 def report_body_residency(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "residencyTitle.png")  
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
@@ -2657,10 +2683,14 @@ def draw_paragraph(canvas, msg, x, y, max_width, max_height, style):
     paragraph.drawOn(canvas, x, y - h)
 
 def report_body_soloparent(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
+
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     p.drawImage(brgy_logo, 205, 273, width=380, height=380)  # Brgy logo
 
     def get_day_with_suffix(day):
@@ -2721,11 +2751,14 @@ def report_body_soloparent(p, y_position, line_height, pk):
     return p
 
 def report_body_indigency(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "IndigencyTitle.jpg")
     
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
@@ -2792,11 +2825,14 @@ def report_body_indigency(p, y_position, line_height, pk):
     return p
 
 def report_body_businessClearance(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyClearanceTitle.jpg")  
     p.drawImage(brgy_logo, 205, 273, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
@@ -2866,11 +2902,14 @@ def report_body_businessClearance(p, y_position, line_height, pk):
     return p
 
 def report_body_businessCertificate(p, y_position, line_height, pk):
+    current_file_path = os.path.abspath(__file__)
     image_filename = "LogoBackground.png"
-    media_folder = "media\item_images"
+    media_folder = os.path.join(os.path.dirname(current_file_path), '..', 'media', 'item_images')
 
     # Construct the full path to the image file
-    brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    brgy_logo = os.path.join(media_folder, image_filename)
+    # brgy_logo = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, image_filename)
+    Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "summonTitle.png")
     Title = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", media_folder, "brgyCertTitle.jpg")  
     p.drawImage(brgy_logo, 120, 290, width=380, height=380) #brgy logo
     # p.drawImage(municipality_logo, 500, 273, width=380, height=380) #Municipality logo
