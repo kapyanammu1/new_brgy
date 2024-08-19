@@ -3776,7 +3776,7 @@ def BusinessList(request):
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required
-def PurokList(request):      
+def PurokList(request):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     purok = Purok.objects.all()
     return render(request, 'purok/PurokList.html', {'purok': purok, 'has_admin_permission': has_admin_permission})
@@ -3839,7 +3839,7 @@ def ResidentList(request):
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required
-def HouseholdList(request):      
+def HouseholdList(request):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     # resident = Resident.objects.exclude(house_no__isnull=True)
     purok_list = Purok.objects.all().order_by("purok_name") 
@@ -3939,7 +3939,7 @@ def DeceasedList(request):
 
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
 @login_required
-def OfwList(request):  
+def OfwList(request):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')     
     ofw = Ofw.objects.all()
     purok_list= Purok.objects.all().order_by("purok_name") 
@@ -3971,13 +3971,13 @@ def Edit_brgy(request):
     return render(request, 'brgy/Edit_brgy.html', {'form': form, 'has_admin_permission': has_admin_permission})
 
 @login_required
-def SummonList(request):      
+def SummonList(request):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')
     summon = Summon.objects.all()
     return render(request, 'Summon/SummonList.html', {'summon': summon, 'has_admin_permission': has_admin_permission})
 
 @login_required
-def FileActionList(request):      
+def FileActionList(request):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')
     fileaction = FileAction.objects.all()
     return render(request, 'Summon/FileActionList.html', {'fileaction': fileaction, 'has_admin_permission': has_admin_permission})
@@ -4022,9 +4022,9 @@ def AdEdPurok(request, pk):
         redirect_to='PurokList',
         additional_context=additional_context
     )
-    
+
 @user_passes_test(lambda user: user.is_authenticated and has_custom_access(user))
-@login_required    
+@login_required
 def AdEdHousehold(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features')        
     try:
@@ -4041,8 +4041,8 @@ def AdEdHousehold(request, pk):
         redirect_to='HouseholdList',
         additional_context=additional_context
     )
-    
-@login_required    
+
+@login_required
 def AdEdJobSeekers(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
@@ -4060,14 +4060,14 @@ def AdEdJobSeekers(request, pk):
         additional_context=additional_context
     )
 
-@login_required    
+@login_required
 def AdEdBrgyClearance(request, pk):
     has_admin_permission = request.user.has_perm('BrgyApp.can_access_admin_features') 
     try:
         brgyclearance = get_object_or_404(BrgyClearance, pk=pk)
     except Http404:
         brgyclearance=None
-    
+
     additional_context = {'has_admin_permission': has_admin_permission}  # Add any additional context data here
     return AdEd(
         request,
