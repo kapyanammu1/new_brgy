@@ -422,6 +422,17 @@ class GeneratePDF(View):
         resident = Resident.objects.all()
         pdf = render_to_pdf('List.html', {'resident': resident})
         return HttpResponse(pdf, content_type='application/pdf')
+    
+# Get the base directory of the project
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+# Path to the font file
+arialbd = os.path.join(BASE_DIR, 'static', 'fonts', 'arialbd.ttf')
+arial = os.path.join(BASE_DIR, 'static', 'fonts', 'Arial.ttf')
+
+# Register the font with ReportLab
+pdfmetrics.registerFont(TTFont('Arial-Black', arialbd))
+pdfmetrics.registerFont(TTFont('Arial', arial))
 
 def report_header1(p, y_position):
     # def draw_title(y_position, line_height):
@@ -449,9 +460,9 @@ def report_header1(p, y_position):
     return p
 
 def report_header2(p, y_position):
-    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    # pdfmetrics.registerFont(TTFont('Arial Black', 'Arial.ttf'))
-    pdfmetrics.registerFont(TTFont('Arial-Black', 'arialbd.ttf'))
+    # pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+    # # pdfmetrics.registerFont(TTFont('Arial Black', 'Arial.ttf'))
+    # pdfmetrics.registerFont(TTFont('Arial-Black', 'arialbd.ttf'))
     brgy = Brgy.objects.first()  
     # def draw_title(y_position, line_height):
     title_header1 = 'Republic of the Philippines'
@@ -486,9 +497,9 @@ def report_header2(p, y_position):
     return p
 
 def report_header(p, y_position):
-    pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
-    # pdfmetrics.registerFont(TTFont('Arial Black', 'Arial.ttf'))
-    pdfmetrics.registerFont(TTFont('Arial-Black', 'arialbd.ttf'))
+    # pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
+    # # pdfmetrics.registerFont(TTFont('Arial Black', 'Arial.ttf'))
+    # pdfmetrics.registerFont(TTFont('Arial-Black', 'arialbd.ttf'))
     brgy = Brgy.objects.first()  
     # def draw_title(y_position, line_height):
     title_header1 = 'Republic of the Philippines'
