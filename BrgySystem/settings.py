@@ -86,9 +86,10 @@ WSGI_APPLICATION = 'BrgySystem.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': dj_database_url.parse(env('DATABASE_URL'))
-# }
+DATABASES = {
+    'default': dj_database_url.parse(env('DATABASE_URL'))
+}
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'mssql',
@@ -104,17 +105,19 @@ WSGI_APPLICATION = 'BrgySystem.wsgi.application'
 #     }
 # }
 # DATABASE_CONNECTION_POOLING = False
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dbBrgy',
-        'USER': 'postgres',
-        'PASSWORD': 'kapyanammuPassword',
-        # 'HOST': 'db',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'dbBrgy',
+#         'USER': 'postgres',
+#         'PASSWORD': 'kapyanammuPassword',
+#         # 'HOST': 'db',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
