@@ -422,17 +422,6 @@ class GeneratePDF(View):
         resident = Resident.objects.all()
         pdf = render_to_pdf('List.html', {'resident': resident})
         return HttpResponse(pdf, content_type='application/pdf')
-    
-# Get the base directory of the project
-FontDIR = os.path.dirname(os.path.abspath(__file__))
-    
-# Path to the font file
-arialbd = os.path.join(FontDIR, 'static', 'fonts', 'arialbd.ttf')
-arial = os.path.join(FontDIR, 'static', 'fonts', 'Arial.ttf')
-
-# Register the font with ReportLab
-pdfmetrics.registerFont(TTFont('Arial-Black', arialbd))
-pdfmetrics.registerFont(TTFont('Arial', arial))
 
 def report_header1(p, y_position):
     # def draw_title(y_position, line_height):
