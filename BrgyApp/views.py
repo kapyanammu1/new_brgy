@@ -424,11 +424,11 @@ class GeneratePDF(View):
         return HttpResponse(pdf, content_type='application/pdf')
     
 # Get the base directory of the project
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FontDIR = os.path.dirname(os.path.abspath(__file__))
     
 # Path to the font file
-arialbd = os.path.join(BASE_DIR, 'static', 'fonts', 'arialbd.ttf')
-arial = os.path.join(BASE_DIR, 'static', 'fonts', 'Arial.ttf')
+arialbd = os.path.join(FontDIR, 'static', 'fonts', 'arialbd.ttf')
+arial = os.path.join(FontDIR, 'static', 'fonts', 'Arial.ttf')
 
 # Register the font with ReportLab
 pdfmetrics.registerFont(TTFont('Arial-Black', arialbd))
