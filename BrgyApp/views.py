@@ -422,6 +422,17 @@ class GeneratePDF(View):
         resident = Resident.objects.all()
         pdf = render_to_pdf('List.html', {'resident': resident})
         return HttpResponse(pdf, content_type='application/pdf')
+    
+# Get the base directory of the project
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+# # Path to the font file
+# arialbd = os.path.join(BASE_DIR, 'static', 'fonts', 'arialbd.ttf')
+# arial = os.path.join(BASE_DIR, 'static', 'fonts', 'Arial.ttf')
+
+# # Register the font with ReportLab
+# pdfmetrics.registerFont(TTFont('Arial-Black', arialbd))
+# pdfmetrics.registerFont(TTFont('Arial', arial))
 
 def report_header1(p, y_position):
     # def draw_title(y_position, line_height):
@@ -460,12 +471,14 @@ def report_header2(p, y_position):
     title_header4 = f'BARANGAY {brgy.brgy_name.upper()}'
     title_header5 = 'OFFICE OF THE PUNONG BARANGAY'
     #title = "RESIDENTS LIST"
-    p.setFont("Arial", 12)  
+    # p.setFont("Arial", 12)  
+    p.setFont("Helvetica", 12)
     p.drawCentredString(290, 800, title_header1)
     p.drawCentredString(290, 788, title_header2)
     p.drawCentredString(290, 776, title_header3)
 
-    p.setFont("Arial-Black", 14)   
+    # p.setFont("Arial-Black", 14)   
+    p.setFont("Helvetica-Bold", 14)
     p.setFillColorRGB(0.82, 0.25, 0.63)
     p.drawCentredString(290, 757, title_header4)
     p.setFont("Helvetica-Bold", 9)  
@@ -497,12 +510,14 @@ def report_header(p, y_position):
     title_header4 = f'BARANGAY {brgy.brgy_name.upper()}'
     title_header5 = 'Tel. # (078) 377 – 2619/ CP. # 0915-608-2549'
     #title = "RESIDENTS LIST"
-    p.setFont("Arial", 12)  
+    # p.setFont("Arial", 12)  
+    p.setFont("Helvetica", 12)
     p.drawCentredString(350 + 3, 800, title_header1)
     p.drawCentredString(350 + 3, 788, title_header2)
     p.drawCentredString(350 + 3, 776, title_header3)
 
-    p.setFont("Arial-Black", 14)   
+    # p.setFont("Arial-Black", 14)   
+    p.setFont("Helvetica-Bold", 14)
     p.setFillColorRGB(0.82, 0.25, 0.63)
     p.drawCentredString(350 + 3, 757, title_header4)
     p.setFont("Helvetica-Bold", 9)  
