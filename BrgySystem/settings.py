@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 import dj_database_url
 import environ
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,7 +25,7 @@ environ.Env.read_env()
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k9nd5=glll1uet96a2e0o-f@c!y&2qaw&gfgivc))aidu-_y&y'
+SECRET_KEY = config("SECRET_KEY") #'django-insecure-k9nd5=glll1uet96a2e0o-f@c!y&2qaw&gfgivc))aidu-_y&y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'BrgySystem.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(env('DATABASE_URL'))
+    'default': dj_database_url.parse(config("DATABASE_URL"))
 }
 
 # DATABASES = {
