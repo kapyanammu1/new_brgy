@@ -36,6 +36,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+SESSION_COOKIE_NAME = 'app1_sessionid'
 # Application definition
 
 INSTALLED_APPS = [
