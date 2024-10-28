@@ -1654,8 +1654,8 @@ def report_body_deathclaimcert(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 500, 800, justified_style)
 
         p.setFont("Helvetica-Bold", 15)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 300, 208, 80, 70)
-        p.drawString(190, 325 - 130, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 300, 208, 80, 70)
+        p.drawString(190, 325 - 130, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(190, 322 - 130, 447, 322  - 130)
         p.drawString(247, 310 - 130, "Punong Barangay")
     draw_header()
@@ -1748,18 +1748,18 @@ def report_brgyOfficials(p, y_position, footer_text):
     
     p.setFont("Helvetica-Bold", 10)
     p.setFillColorRGB(0.12, 0.29, 0.49)
-    p.drawCentredString(112, y_position, "AARON ROBERT A. BINARAO")
+    p.drawCentredString(112, y_position, "Sample Captain")
     p.setFont("Helvetica-Bold", 10)
-    p.drawCentredString(112, y_position - (twelve_space * 4), "Glenmore D. Arao")
-    p.drawCentredString(112, y_position - (twelve_space * 9), "Arthur M. Maddara")
-    p.drawCentredString(112, y_position - (twelve_space * 14), "Garet P. Soriano")
-    p.drawCentredString(112, y_position - (twelve_space * 21), "Remelin M. Addun")
-    p.drawCentredString(112, y_position - (twelve_space * 28), "Alberto B. Balubal")
-    p.drawCentredString(112, y_position - (twelve_space * 32), "Isidro A. Tamayao")
-    p.drawCentredString(112, y_position - (twelve_space * 38), "Mikejor G. De Ramos")
-    p.drawCentredString(112, y_position - (twelve_space * 42), "Justine Claire E. Talay")
-    p.drawCentredString(112, y_position - (twelve_space * 47), "Romel T. Flores")
-    p.drawCentredString(112, y_position - (twelve_space * 50), "Francis C. Gonzales")
+    p.drawCentredString(112, y_position - (twelve_space * 4), "Sample Kagawad1")
+    p.drawCentredString(112, y_position - (twelve_space * 9), "Sample Kagawad2")
+    p.drawCentredString(112, y_position - (twelve_space * 14), "Sample Kagawad3")
+    p.drawCentredString(112, y_position - (twelve_space * 21), "Sample Kagawad4")
+    p.drawCentredString(112, y_position - (twelve_space * 28), "Sample Kagawad5")
+    p.drawCentredString(112, y_position - (twelve_space * 32), "Sample Kagawad6")
+    p.drawCentredString(112, y_position - (twelve_space * 38), "Sample Kagawad7")
+    p.drawCentredString(112, y_position - (twelve_space * 42), "Sample SK Chairman")
+    p.drawCentredString(112, y_position - (twelve_space * 47), "Sample Barangay Secretary")
+    p.drawCentredString(112, y_position - (twelve_space * 50), "Sample Barangay Treasurer")
 
 
     p.setFont("Helvetica-Bold", 10)
@@ -1962,8 +1962,8 @@ def report_body_JobSeekers(p, y_position, line_height, pk):
 
         p.setFont("Helvetica-Bold", 13)
         # Add e-signature above the paragraph
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 290, 334, 80, 70)
-        p.drawString(190, 355 - 30, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 290, 334, 80, 70)
+        p.drawString(190, 355 - 30, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(190, 352 - 30, 413, 352 - 30)
         p.drawString(247, 340 - 30, "Punong Barangay")
 
@@ -2064,8 +2064,8 @@ def report_body_Summon(p, y_position, line_height, pk):
         p.setFont("Helvetica-Bold", 12)
         p.drawString(340, 620, f'Barangay Case No.: {summon.blotter}')
         p.line(453, 618, 510, 618)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 160 - plus_y, 80, 70)
-        p.drawString(340, (190 - 40) - plus_y, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 160 - plus_y, 80, 70)
+        p.drawString(340, (190 - 40) - plus_y, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, (202 - 55) - plus_y, 552, (202 - 55) - plus_y)
         p.drawString(390, (190 - 55) - plus_y, "Punong Barangay")
 
@@ -2174,7 +2174,7 @@ def report_body_FileAction(p, y_position, line_height, pk):
 
         # add_signature(p, "media/item_images/cap_esig-fotor.png", 400, 200 - 20, 120, 50)
         
-        p.drawString(80, (130 - 20) - plus_y, f'Hon. AARON ROBERT A. BINARAO')
+        p.drawString(80, (130 - 20) - plus_y, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(70, (132 - 25) - plus_y, 313, (132 - 25) - plus_y)
         p.drawString(138, (130 - 35) - plus_y, "Pangkat Chairman")
 
@@ -2263,8 +2263,8 @@ def report_body_brgyClearance(p, y_position, line_height, pk):
         # p.line(330, 220, 500, 220)
 
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 200, 80, 80)
-        p.drawString(340, 190, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 200, 80, 80)
+        p.drawString(340, 190, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 202 - 15, 552, 202 - 15)
         p.drawString(390, 190 - 15, "Punong Barangay")
 
@@ -2342,8 +2342,8 @@ def report_body_brgyCertificate(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 355, 800, justified_style)
 
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
-        p.drawString(340, 215 - 5, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
+        p.drawString(340, 215 - 5, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 212 - 5, 552, 212 - 5)
         p.drawString(390, 200 -5, "Punong Barangay")
         footer_text = 82
@@ -2419,8 +2419,8 @@ def report_body_deathCert(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 355, 800, justified_style)
 
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 400, 220, 120, 100)
-        p.drawString(340, 215, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 400, 220, 120, 100)
+        p.drawString(340, 215, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 212, 552, 212)
         p.drawString(390, 200, "Punong Barangay")
         footer_text = 82
@@ -2593,8 +2593,8 @@ def report_body_goodmoral(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 355, 800, justified_style)
 
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 380, 220, 80, 70)
-        p.drawString(290, 215 - 3, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 380, 220, 80, 70)
+        p.drawString(290, 215 - 3, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(280, 212 - 3, 504, 212 - 3)
         p.drawString(340, 200 - 3, "Punong Barangay")
         footer_text = 82
@@ -2669,8 +2669,8 @@ def report_body_residency(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 355, 800, justified_style)
 
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
-        p.drawString(340, 215 - 3, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
+        p.drawString(340, 215 - 3, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 212 - 3, 552, 212 - 3)
         p.drawString(390, 200 - 3, "Punong Barangay")
 
@@ -2756,8 +2756,8 @@ def report_body_soloparent(p, y_position, line_height, pk):
         p.setFont("Helvetica-Bold", 13)
         
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
-        p.drawString(340, 215 - 3, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
+        p.drawString(340, 215 - 3, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 212 - 3, 552, 212 - 3)
         p.drawString(390, 200 - 3, "Punong Barangay")
     draw_header()
@@ -2823,8 +2823,8 @@ def report_body_indigency(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 355, 800, justified_style)
     
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
-        p.drawString(340, 215 - 3, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
+        p.drawString(340, 215 - 3, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 212 - 3, 552, 212 - 3)
         p.drawString(390, 200 - 3, "Punong Barangay")
         
@@ -2897,8 +2897,8 @@ def report_body_businessClearance(p, y_position, line_height, pk):
         p.line(205, 352, 321, 352)
         p.drawString(205, 340, "   Signature of Applicant")
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
-        p.drawString(340, 215 - 3, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430, 220, 80, 70)
+        p.drawString(340, 215 - 3, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330, 212 - 3, 552, 212 - 3)
         p.drawString(390, 200 - 3, "Punong Barangay")
         p.setFont("Helvetica", 10)
@@ -2974,8 +2974,8 @@ def report_body_businessCertificate(p, y_position, line_height, pk):
         draw_paragraph(p, content_text, x, y, 510, 800, justified_style)
 
         p.setFont("Helvetica-Bold", 12)
-        add_signature(p, "media/item_images/cap_esig-fotor.png", 430-150, 220, 80, 70)
-        p.drawString(340-150, 215 - 3, f'HON. AARON ROBERT A. BINARAO')
+        #add_signature(p, "media/item_images/cap_esig-fotor.png", 430-150, 220, 80, 70)
+        p.drawString(340-150, 215 - 3, f'HON. SAMPLE BRGY CAPTAIN')
         p.line(330-150, 212 - 3, 552-150, 212 - 3)
         p.drawString(390-150, 200 - 3, "Punong Barangay")
         footer_text = 82
